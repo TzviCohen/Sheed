@@ -7,5 +7,7 @@ public interface Utils {
     String USER_ID_KEY = "user_id";
     String USER_INTENT_SERIALIZABLE_KEY = "user_ser";
 
+    String USER1_TEST = "Fzm1QYjXfbIIvtzLj1Uk";
+    String USER2_TEST = "oecJ2yy4JGlicIvQhaPH";
 
 }

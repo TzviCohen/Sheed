@@ -1,7 +1,11 @@
 package com.postpc.Sheed;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -30,7 +34,8 @@ public class SheedUsersDB {
 
             // upon download success apply processFunc
             processUserInFS.process(userObj);
-        });
+        }).
+        addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
     }
 
     <T> T downloadUserAndQuery(String userId , Query<T> query) {

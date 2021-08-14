@@ -28,13 +28,22 @@ public class MainActivity extends AppCompatActivity {
         if (userId == null)
         {
             // go to registration page
-        }
-        db.downloadUserAndDo(userId, sheedUser -> {
+
+            // but for now im going to MatchActivity just for test
 
             Intent matchActivityIntent = new Intent(context, MatchActivity.class);
-            matchActivityIntent.putExtra(USER_INTENT_SERIALIZABLE_KEY, sheedUser);
             startActivity(matchActivityIntent);
-        });
+            return;
 
+        }
+        else
+        {
+            db.downloadUserAndDo(userId, sheedUser -> {
+
+                Intent matchActivityIntent = new Intent(context, MatchActivity.class);
+                matchActivityIntent.putExtra(USER_INTENT_SERIALIZABLE_KEY, sheedUser);
+                startActivity(matchActivityIntent);
+            });
+        }
     }
 }

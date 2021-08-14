@@ -5,12 +5,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static com.postpc.Sheed.Utils.USER1_TEST;
+import static com.postpc.Sheed.Utils.USER2_TEST;
+
 public class MatchMaker {
 
     static SheedUsersDB db = SheedApp.getDB();
 
     static Query<Gender> genderQuery = sheedUser -> sheedUser.gender;
     static Query<Gender> interestedInQuery = sheedUser -> sheedUser.interestedIn;
+
+
+    // This is a test make match
+
+    static List<String> makeMatch()
+    {
+        return new ArrayList<>(Arrays.asList(USER1_TEST, USER2_TEST));
+    }
 
     static List<String> makeMatch(List<String> community)
     {

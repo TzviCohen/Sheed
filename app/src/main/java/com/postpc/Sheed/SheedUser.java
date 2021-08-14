@@ -14,14 +14,14 @@ enum Gender
 
 public class SheedUser implements Serializable {
 
-    String firstName;
-    String lastName;
-    Integer age;
-    String imageUrl;
-    Gender gender;
-    Gender interestedIn;
+    public String firstName;
+    public String lastName;
+    public Integer age;
+    public String imageUrl;
+    public Gender gender;
+    public Gender interestedIn;
 
-    List<String> community;
+    public List<String> community;
 
 
 }
