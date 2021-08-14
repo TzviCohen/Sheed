@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "55516420277",
+    "project_id": "sheeddb",
+    "storage_bucket": "sheeddb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55516420277:android:65ca5c5fcc23681789c6fc",
+        "android_client_info": {
+          "package_name": "com.postpc.Sheed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "55516420277-ne84oo1eil2pqbis0duhgd29tisd629f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASivomFTgxM1r5EYO5fzmBk1VEm0mT5mA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "55516420277-ne84oo1eil2pqbis0duhgd29tisd629f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
