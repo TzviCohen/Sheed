@@ -1,7 +1,13 @@
 package com.postpc.Sheed;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +16,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
@@ -20,9 +27,13 @@ public class MatchActivity extends AppCompatActivity {
 
     TextView rhsNameView;
     TextView lhsNameView;
-
     ShapeableImageView rhsImage;
     ShapeableImageView lhsImage;
+    ImageButton acceptMatchFab;
+    ImageButton declineMatchFab;
+    TextView headerView;
+    View swipeDetector;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +57,34 @@ public class MatchActivity extends AppCompatActivity {
         rhsImage = findViewById(R.id.rhs_img);
         lhsImage = findViewById(R.id.lhs_img);
 
+        acceptMatchFab = findViewById(R.id.make_match);
+        declineMatchFab = findViewById(R.id.not_make_match);
+        headerView = findViewById(R.id.header_title);
 
-        // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
-        List<String> matchFound = MatchMaker.makeMatch();
+        swipeDetector = findViewById(R.id.swipe_detector);
+
         db = SheedApp.getDB();
-        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
-        db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
-        db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
+        matchLoopExecutorHelper();
+
+        acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
+        declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
+
+        acceptMatchFab.bringToFront();
+        declineMatchFab.bringToFront();
+
+        swipeDetector.setOnTouchListener(new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeRight() {
+                onAcceptMatchAction();
+            }
+            @Override
+            public void onSwipeLeft() {
+                onDeclineMatchAction();
+            }
+        });
+
+
+
     }
 
     void fillRhsUser(SheedUser sheedUser)
@@ -60,12 +92,126 @@ public class MatchActivity extends AppCompatActivity {
         rhsNameView.setText(sheedUser.firstName);
         Picasso.with(this).load(sheedUser.imageUrl).into(rhsImage);
 
+        rhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        rhsImage.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+
+        rhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        rhsNameView.setVisibility(View.VISIBLE);
+                    }
+                }).start();
     }
 
     void fillLhsUser(SheedUser sheedUser)
     {
+
         lhsNameView.setText(sheedUser.firstName);
         Picasso.with(this).load(sheedUser.imageUrl).into(lhsImage);
+
+        lhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                lhsImage.setVisibility(View.VISIBLE);
+            }
+        }).start();
+
+        lhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        lhsNameView.setVisibility(View.VISIBLE);
+                    }
+                }).start();
     }
+
+    void matchLoopExecutorHelper(){
+
+        // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
+        List<String> matchFound = MatchMaker.makeMatch();
+        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
+        db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
+        db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
+        headerView.setText("We think it's a great match !");
+        headerView.setVisibility(View.VISIBLE);
+
+    }
+
+    void onAcceptMatchAction() {
+
+        // Can add animations
+
+        // Update DB to let users know they have been matched
+
+
+        headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
+        roundEndRoutine();
+    }
+
+    void onDeclineMatchAction() {
+
+        // Can add animations
+
+        // Update DB for matching algorithm improvement
+        headerView.setText("Better luck next time");  // I added this just to see that the listeners indeed work
+        roundEndRoutine();
+    }
+
+    void matchLoopExecutor(Integer x){
+
+        Handler handler = new Handler();
+        handler.postDelayed(this::matchLoopExecutorHelper, x*1000);
+    }
+
+    void roundEndRoutine(){
+
+        rhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        rhsNameView.setVisibility(View.GONE);
+                    }
+                }).start();
+
+        rhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        rhsImage.setVisibility(View.GONE);
+                    }
+                }).start();
+
+        lhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    lhsNameView.setVisibility(View.GONE);
+                }
+                }).start();
+
+
+        lhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        lhsImage.setVisibility(View.GONE);
+                    }
+                }).start();
+
+        headerView.setVisibility(View.GONE);
+
+        matchLoopExecutor(1);
+
+    }
+
+
+
 }
 

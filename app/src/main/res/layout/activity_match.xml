@@ -78,6 +78,7 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/header_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/imgs"
@@ -109,5 +110,15 @@
         android:layout_marginBottom="48dp"
         android:layout_marginStart="64dp"
         android:contentDescription="TODO" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/swipe_detector"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

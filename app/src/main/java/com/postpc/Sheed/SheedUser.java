@@ -24,10 +24,10 @@ public class SheedUser implements Serializable {
     public Gender interestedIn;
 
     public List<String> community;
-
     public List<String> matches;
     public List<String> matchesMade;
-    String id;
+
+    public String id;
 
     SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn)
     {
@@ -37,6 +37,24 @@ public class SheedUser implements Serializable {
         this.gender = gender;
         this.interestedIn = interestedIn;
 
+        // think about image is handled
+
+        id = UUID.randomUUID().toString();
+
+        // empty lists
+        community = new ArrayList<>();
+        matches = new ArrayList<>();
+        matchesMade = new ArrayList<>();
+    }
+
+    SheedUser()
+    {
+        this.firstName = "";
+        this.lastName = "";
+        this.age = 0;
+        this.gender = Gender.UNDEFINED;
+        this.interestedIn = Gender.UNDEFINED;
+        this.imageUrl = "";
         // think about image is handled
 
         id = UUID.randomUUID().toString();
