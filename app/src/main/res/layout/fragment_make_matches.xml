@@ -1,19 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MakeMatchesFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/firstFragment"
+
+    <RelativeLayout
+        android:id="@+id/imgs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Make Match fragment"
-        android:textColor="#43a047"
-        android:textSize="40sp"
-        android:textStyle="italic|bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/lhs_img"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:srcCompat="@mipmap/ic_launcher"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+            />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/rhs_img"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_toEndOf="@id/lhs_img"
+            app:srcCompat="@mipmap/ic_launcher"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+            />
+
+        <TextView
+            android:id="@+id/lhs_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lhs_img"
+            android:layout_alignLeft="@+id/lhs_img"
+            android:layout_alignRight="@id/lhs_img"
+            android:text="Manu"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            style="@style/sheedSecondaryText"
+            />
+
+        <TextView
+            android:id="@+id/rhs_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rhs_img"
+            android:layout_alignLeft="@+id/rhs_img"
+            android:layout_alignRight="@id/rhs_img"
+            android:text="Nitsan"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            style="@style/sheedSecondaryText"
+            android:layout_marginStart="16dp"
+            />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/imgs"
+        android:text="We think they match is 97% !!"
+        android:layout_marginBottom="64dp"
+        android:textAllCaps="true"
+        android:textAlignment="center"
+        style="@style/sheedPrimaryText"
         />
 
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/make_match"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:srcCompat="@drawable/ic_baseline_check_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="48dp"
+        android:layout_marginEnd="64dp"
+        android:contentDescription="TODO"
+        android:background="@drawable/make_match_button"
+        />
+
+    <ImageButton
+        android:id="@+id/not_make_match"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:srcCompat="@drawable/ic_baseline_highlight_off_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="48dp"
+        android:layout_marginStart="64dp"
+        android:contentDescription="TODO"
+        android:background="@drawable/make_match_button"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/swipe_detector"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
