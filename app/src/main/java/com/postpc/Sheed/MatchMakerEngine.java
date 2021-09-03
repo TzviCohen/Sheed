@@ -8,7 +8,7 @@ import java.util.Random;
 import static com.postpc.Sheed.Utils.USER1_TEST;
 import static com.postpc.Sheed.Utils.USER2_TEST;
 
-public class MatchMaker {
+public class MatchMakerEngine {
 
     static SheedUsersDB db = SheedApp.getDB();
 

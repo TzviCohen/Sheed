@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +15,6 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
@@ -135,7 +133,7 @@ public class MatchActivity extends AppCompatActivity {
     void matchLoopExecutorHelper(){
 
         // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
-        List<String> matchFound = MatchMaker.makeMatch();
+        List<String> matchFound = MatchMakerEngine.makeMatch();
         assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
         db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
         db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
