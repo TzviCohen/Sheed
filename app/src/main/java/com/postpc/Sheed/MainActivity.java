@@ -14,6 +14,8 @@ import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
 import com.postpc.Sheed.yourMatches.YourMatchesFragement;
 
+import static com.postpc.Sheed.Utils.USER1_TEST;
+
 public class MainActivity extends AppCompatActivity {
 
     SheedUsersDB db;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
             db = SheedApp.getDB();
         }
 
+        //TODO: remove the following debugging line:
+        db.saveUserIdToSP(USER1_TEST);
 
         String userId = db.getIdFromSP();
         if (userId == null)
