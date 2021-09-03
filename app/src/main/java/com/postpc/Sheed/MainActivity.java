@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "user id from sp: " + userId);
             bottomNavigationView = findViewById(R.id.bottomNavigationView);
             bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-            bottomNavigationView.setSelectedItemId(R.id.make_match);
+            bottomNavigationView.getMenu().getItem(1).setChecked(true);
 
             db.downloadUserAndDo(userId, sheedUser -> {
             // get the user from db and move to make matches screen
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                             getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
                             return true;
 
-                        case R.id.chat:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, yourMatchesFragement).commit();
+                        case R.id.make_matches_navigate:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
                             return true;
 
-                        case R.id.make_matches:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
+                        case R.id.your_matches_navigate:
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, yourMatchesFragement).commit();
                             return true;
                     }
                     return false;
