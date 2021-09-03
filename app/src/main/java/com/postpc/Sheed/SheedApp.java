@@ -2,6 +2,8 @@ package com.postpc.Sheed;
 
 import android.app.Application;
 
+import com.postpc.Sheed.database.SheedUsersDB;
+
 public class SheedApp  extends Application {
 
     SheedUsersDB sheedUsersDB = null;

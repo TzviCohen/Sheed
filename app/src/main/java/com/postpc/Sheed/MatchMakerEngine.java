@@ -1,5 +1,7 @@
 package com.postpc.Sheed;
 
+import com.postpc.Sheed.database.SheedUsersDB;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +20,7 @@ public class MatchMakerEngine {
 
     // This is a test make match
 
-    static List<String> makeMatch()
+    public static List<String> makeMatch()
     {
         return new ArrayList<>(Arrays.asList(USER1_TEST, USER2_TEST));
     }
