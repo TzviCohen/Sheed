@@ -28,14 +28,16 @@ public class SheedUser implements Serializable {
     public List<String> matchesMade;
 
     public String id;
+    public String email;
 
-    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn)
+    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String email)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.gender = gender;
         this.interestedIn = interestedIn;
+        this.email = email;
 
         // think about image is handled
 
@@ -55,6 +57,7 @@ public class SheedUser implements Serializable {
         this.gender = Gender.UNDEFINED;
         this.interestedIn = Gender.UNDEFINED;
         this.imageUrl = "";
+        this.email = "user@sheed.com";
         // think about image is handled
 
         id = UUID.randomUUID().toString();

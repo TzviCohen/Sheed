@@ -10,4 +10,10 @@ public interface Utils {
     String USER1_TEST = "Fzm1QYjXfbIIvtzLj1Uk";
     String USER2_TEST = "oecJ2yy4JGlicIvQhaPH";
 
+    String USER1_EMAIL = "s@gmail.com";
+    String USER2_EMAIL = "r@gmail.com";
+
+
+    int SECOND = 1000;
+
 }

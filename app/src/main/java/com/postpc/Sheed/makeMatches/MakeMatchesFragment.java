@@ -2,11 +2,8 @@ package com.postpc.Sheed.makeMatches;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
@@ -22,12 +19,11 @@ import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.MatchMakerEngine;
 import com.postpc.Sheed.database.SheedUsersDB;
-import com.postpc.Sheed.profile.ProfileFragment;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
+
+import static com.postpc.Sheed.Utils.SECOND;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +33,7 @@ import java.util.List;
 public class MakeMatchesFragment extends Fragment {
 
     private final static String TAG = "Sheed MakeMatches Frag";
+    private final static int HEADER_APPROVAL_NUM = 4;
 
     private SheedUser sheedUser;
     SheedUsersDB db;
@@ -49,6 +46,12 @@ public class MakeMatchesFragment extends Fragment {
     ImageButton declineMatchFab;
     TextView headerView;
     View swipeDetector;
+
+    boolean isFirstIterRhs = true;
+    boolean isFirstIterLhs = true;
+    private int header_approval_count = 0;
+
+
 
     public MakeMatchesFragment() {
         // Required empty public constructor
@@ -73,6 +76,10 @@ public class MakeMatchesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        isFirstIterRhs = true;
+        isFirstIterLhs = true;
+        header_approval_count = 0;
 
         matchLoopExecutorHelper();
 
@@ -104,36 +111,6 @@ public class MakeMatchesFragment extends Fragment {
             }
             sheedUser = db.currentSheedUser;
         }
-
-//        matchLoopExecutorHelper();
-//
-//        acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
-//        declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
-//
-//        acceptMatchFab.bringToFront();
-//        declineMatchFab.bringToFront();
-//
-//        swipeDetector.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
-//            @Override
-//            public void onSwipeRight() {
-//                onAcceptMatchAction();
-//            }
-//            @Override
-//            public void onSwipeLeft() {
-//                onDeclineMatchAction();
-//            }
-//        });
-
-
-//        final Intent sheedUserIntent = getIntent();
-//        if (sheedUserIntent != null)
-//        {
-//            currentUser = (SheedUser) sheedUserIntent.getSerializableExtra(USER_INTENT_SERIALIZABLE_KEY);
-//        }
-//        // in case you want to get some arguments:
-//        if (getArguments() != null) {
-//            // sheedUser = (SheedUser) getArguments().getSerializable(SHEED_USER);
-//        }
     }
 
     @Override
@@ -161,46 +138,57 @@ public class MakeMatchesFragment extends Fragment {
     private void fillRhsUser(SheedUser sheedUser)
     {
         rhsNameView.setText(sheedUser.firstName);
-        Picasso.with(getContext()).load(sheedUser.imageUrl).into(rhsImage);
+        Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(rhsImage);
+        float translationValue = (isFirstIterRhs) ? 0f : 360f;
 
-        rhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        rhsImage.setVisibility(View.VISIBLE);
+        rhsImage.animate().translationXBy(-translationValue).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        rhsImage.setVisibility(View.VISIBLE);
+                        showHeader();
                     }
                 }).start();
 
-        rhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        rhsNameView.setVisibility(View.VISIBLE);
+        rhsNameView.animate().translationXBy(-translationValue).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        rhsNameView.setVisibility(View.VISIBLE);
+                        showHeader();
                     }
                 }).start();
+
+        isFirstIterRhs = false;
     }
 
     private void fillLhsUser(SheedUser sheedUser)
     {
 
         lhsNameView.setText(sheedUser.firstName);
-        Picasso.with(getContext()).load(sheedUser.imageUrl).into(lhsImage);
+        Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(lhsImage);
 
-        lhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        float translationValue = (isFirstIterLhs) ? 0f : 360f;
+
+        lhsImage.setVisibility(View.VISIBLE);
+        lhsImage.animate().translationXBy(translationValue).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        lhsImage.setVisibility(View.VISIBLE);
+                        showHeader();
                     }
                 }).start();
 
-        lhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        lhsNameView.setVisibility(View.VISIBLE);
+        lhsNameView.animate().translationXBy(translationValue).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        lhsNameView.setVisibility(View.VISIBLE);
+                        showHeader();
                     }
                 }).start();
+
+        isFirstIterLhs = false;
     }
 
     private void matchLoopExecutorHelper(){
@@ -208,10 +196,19 @@ public class MakeMatchesFragment extends Fragment {
         // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
         List<String> matchFound = MatchMakerEngine.makeMatch();
         assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
+
         db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
         db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
-        headerView.setText("We think it's a great match !");
-        headerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showHeader(){
+        header_approval_count++;
+        if (header_approval_count == HEADER_APPROVAL_NUM)
+        {
+            headerView.setText("We think it's a great match !");
+            headerView.setVisibility(View.VISIBLE);
+            header_approval_count = 0;
+        }
 
     }
 
@@ -235,15 +232,15 @@ public class MakeMatchesFragment extends Fragment {
         roundEndRoutine();
     }
 
-    private void matchLoopExecutor(Integer x){
+    private void matchLoopExecutor(Integer delaySecs){
 
         Handler handler = new Handler();
-        handler.postDelayed(this::matchLoopExecutorHelper, x*1000);
+        handler.postDelayed(this::matchLoopExecutorHelper, delaySecs * SECOND);
     }
 
     private void roundEndRoutine(){
 
-        rhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        rhsNameView.animate().translationXBy(360f).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -251,7 +248,7 @@ public class MakeMatchesFragment extends Fragment {
                     }
                 }).start();
 
-        rhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        rhsImage.animate().translationXBy(360f).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -259,7 +256,7 @@ public class MakeMatchesFragment extends Fragment {
                     }
                 }).start();
 
-        lhsNameView.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        lhsNameView.animate().translationXBy(-360f).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
@@ -268,15 +265,13 @@ public class MakeMatchesFragment extends Fragment {
                 }).start();
 
 
-        lhsImage.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+        lhsImage.animate().translationXBy(-360f).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         lhsImage.setVisibility(View.GONE);
                     }
                 }).start();
-
-        headerView.setVisibility(View.GONE);
 
         matchLoopExecutor(1);
 

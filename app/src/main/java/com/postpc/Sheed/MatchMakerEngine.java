@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static com.postpc.Sheed.Utils.USER1_EMAIL;
 import static com.postpc.Sheed.Utils.USER1_TEST;
+import static com.postpc.Sheed.Utils.USER2_EMAIL;
 import static com.postpc.Sheed.Utils.USER2_TEST;
 
 public class MatchMakerEngine {
@@ -22,7 +24,7 @@ public class MatchMakerEngine {
 
     public static List<String> makeMatch()
     {
-        return new ArrayList<>(Arrays.asList(USER1_TEST, USER2_TEST));
+        return new ArrayList<>(Arrays.asList(USER1_EMAIL, USER2_EMAIL));
     }
 
     static List<String> makeMatch(List<String> community)

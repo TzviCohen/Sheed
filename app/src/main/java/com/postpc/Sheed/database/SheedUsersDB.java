@@ -6,6 +6,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.postpc.Sheed.ProcessUserInFS;
@@ -32,6 +35,19 @@ public class SheedUsersDB {
         this.context = context;
         this.fireStoreApp = FirebaseFirestore.getInstance();
         spForUserId = context.getSharedPreferences(SP_KEY_FOR_USER_ID, Context.MODE_PRIVATE);
+    }
+
+
+    // TODO : tune this function with Yaheli
+    public boolean isUserExists(String userId){
+        fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                currentSheedUser = documentSnapshot.toObject(SheedUser.class);
+            }
+
+        });
+
+        return true;
     }
 
     public void downloadUserAndDo(String userId , ProcessUserInFS processUserInFS ) {
