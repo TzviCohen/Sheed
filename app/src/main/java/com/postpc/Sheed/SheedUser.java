@@ -23,6 +23,7 @@ public class SheedUser implements Serializable {
     public Gender gender;
     public Gender interestedIn;
 
+
     public List<String> community;
     public List<String> matches;
     public List<String> matchesMade;
@@ -30,7 +31,7 @@ public class SheedUser implements Serializable {
     public String id;
     public String email;
 
-    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String email)
+    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String imageUrl, String email)
     {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -38,6 +39,8 @@ public class SheedUser implements Serializable {
         this.gender = gender;
         this.interestedIn = interestedIn;
         this.email = email;
+
+        this.imageUrl = imageUrl;
 
         // think about image is handled
 
@@ -47,6 +50,8 @@ public class SheedUser implements Serializable {
         community = new ArrayList<>();
         matches = new ArrayList<>();
         matchesMade = new ArrayList<>();
+
+
     }
 
     SheedUser()

@@ -1,19 +1,28 @@
 package com.postpc.Sheed.profile;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.database.SheedUsersDB;
+import com.squareup.picasso.Picasso;
+
+import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,8 +77,104 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        TextView text = view.findViewById(R.id.profile_head_title);
-        text.setText("user retrieved from database: " + sheedUser.firstName + " " + sheedUser.lastName);
+//        TextView text = view.findViewById(R.id.profile_head_title);
+//        text.setText("user retrieved from database: " + sheedUser.firstName + " " + sheedUser.lastName);
         return view;
     }
 }
+
+
+
+//
+//package com.postpc.Sheed;
+//
+//        import android.animation.Animator;
+//        import android.animation.AnimatorListenerAdapter;
+//        import android.content.Intent;
+//        import android.os.Bundle;
+//        import android.text.Editable;
+//        import android.text.TextWatcher;
+//        import android.view.View;
+//        import android.widget.EditText;
+//        import android.widget.ImageButton;
+//        import android.widget.TextView;
+//
+//
+//        import androidx.appcompat.app.AppCompatActivity;
+//        import androidx.recyclerview.widget.LinearLayoutManager;
+//
+//        import com.google.android.material.imageview.ShapeableImageView;
+//        import com.squareup.picasso.Picasso;
+//
+//        import static com.postpc.Sheed.Utils.USER1_TEST;
+//        import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
+//
+//
+//public class ProfileActivity extends AppCompatActivity {
+//
+//    SheedUser currentUser;
+//    SheedUsersDB db;
+//
+//    TextView name;
+//    TextView matches;
+//    ImageButton edit_button;
+//    ShapeableImageView img;
+//
+//    String ID;
+//
+//
+//    View swipeDetector;
+//
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_prifile);
+//
+//        final Intent sheedUserIntent = getIntent();
+//        if (sheedUserIntent != null)
+//        {
+//            currentUser = (SheedUser) sheedUserIntent.getSerializableExtra(USER_INTENT_SERIALIZABLE_KEY);
+//        }
+//
+//        Intent intentOpenedMe = getIntent();
+//        ID = intentOpenedMe.getStringExtra("user");
+//        db = SheedApp.getDB();
+//        name = findViewById(R.id.name);
+//        matches = findViewById(R.id.matches);
+//        edit_button = findViewById(R.id.edit_button);
+//        img = findViewById(R.id.img);
+//        fillRhsUser(currentUser);
+//
+//
+//    }
+//
+//
+//    void fillRhsUser(SheedUser sheedUser)
+//    {
+//        name.setText(sheedUser.firstName);
+//        Picasso.with(this).load(sheedUser.imageUrl).into(img);
+//
+//        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+//                setListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        img.setVisibility(View.VISIBLE);
+//                    }
+//                }).start();
+//
+//        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+//                setListener(new AnimatorListenerAdapter() {
+//                    @Override
+//                    public void onAnimationEnd(Animator animation) {
+//                        img.setVisibility(View.VISIBLE);
+//                    }
+//                }).start();
+//
+//
+//        matches.setText( sheedUser.num_matches  + "\nmatches");
+//
+//    }
+//
+//
+//
+//}

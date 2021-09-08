@@ -15,6 +15,7 @@ import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.Query;
 import com.postpc.Sheed.SheedUser;
 
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
@@ -98,4 +99,20 @@ public class SheedUsersDB {
         editor.remove(userId);
         editor.apply();
     }
+
+
+    public void addUser(SheedUser sheedUser) {
+        String userId = UUID.randomUUID().toString();
+//        SheedUser sheedUser = new SheedUser(firstName, lastName, age, gender, interestedIn, imageUrl);
+        fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).set(sheedUser).addOnSuccessListener(documentSnapshot -> {
+
+//            SheedUser userObj = documentSnapshot.toObject(SheedUser.class);
+//
+//            // upon download success apply processFunc
+//            processUserInFS.process(userObj);
+        }).
+                addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
+    }
+
+
 }
