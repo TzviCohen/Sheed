@@ -16,15 +16,15 @@ import com.postpc.Sheed.database.SheedUsersDB;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link YourMatchesFragement#newInstance} factory method to
+ * Use the {@link YourMatchesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class YourMatchesFragement extends Fragment {
+public class YourMatchesFragment extends Fragment {
 
     private SheedUser sheedUser;
     SheedUsersDB db;
 
-    public YourMatchesFragement() {
+    public YourMatchesFragment() {
         // Required empty public constructor
     }
 
@@ -34,8 +34,8 @@ public class YourMatchesFragement extends Fragment {
      *
      * @return A new instance of fragment ChatFragment.
      */
-    public static YourMatchesFragement newInstance() {
-        YourMatchesFragement fragment = new YourMatchesFragement();
+    public static YourMatchesFragment newInstance() {
+        YourMatchesFragment fragment = new YourMatchesFragment();
         Bundle args = new Bundle();
         // in case you want to pass arguments:
         // args.putSerializable(SHEED_USER, sheedUser);
