@@ -9,17 +9,12 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
 import com.postpc.Sheed.yourMatches.YourMatchesFragement;
 
-import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
 import static com.postpc.Sheed.Utils.USER1_EMAIL;
-import static com.postpc.Sheed.Utils.USER1_TEST;
-import static com.postpc.Sheed.Utils.USER2_EMAIL;
-import static com.postpc.Sheed.Utils.USER2_TEST;
 
 public class MainActivity extends AppCompatActivity {
 

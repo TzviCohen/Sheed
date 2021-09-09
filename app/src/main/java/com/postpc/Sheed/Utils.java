@@ -7,11 +7,11 @@ public interface Utils {
     String USER_ID_KEY = "user_id";
     String USER_INTENT_SERIALIZABLE_KEY = "user_ser";
 
-    String USER1_TEST = "Fzm1QYjXfbIIvtzLj1Uk";
-    String USER2_TEST = "oecJ2yy4JGlicIvQhaPH";
+    String USER1_TEST = "111";
+    String USER2_TEST = "222";
 
-    String USER1_EMAIL = "s@gmail.com";
-    String USER2_EMAIL = "r@gmail.com";
+    String USER1_EMAIL = "chandler@gmail.com";
+    String USER2_EMAIL = "monica@gmail.com";
 
 
     int SECOND = 1000;

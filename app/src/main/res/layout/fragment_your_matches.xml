@@ -3,15 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".yourMatches.YourMatchesFragement">
+    tools:context=".yourMatches.YourMatchesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/your_matches_header_title"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerYourMatchesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="your matches fragment"
-        style="@style/sheedPrimaryText"
-        />
+        android:layout_height="match_parent"  />
 
 </FrameLayout>

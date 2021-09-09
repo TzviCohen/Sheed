@@ -17,5 +17,7 @@
         <item>UNDEFINED</item>
     </string-array>
 
+    <string name="chat">Chat</string>
+
 
 </resources>
