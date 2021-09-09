@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -35,7 +37,10 @@ public class ProfileFragment extends Fragment {
 
     private SheedUser sheedUser;
     SheedUsersDB db;
-
+    TextView name;
+    TextView matches;
+    ImageButton edit_button;
+    ShapeableImageView img;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -66,10 +71,6 @@ public class ProfileFragment extends Fragment {
             }
             sheedUser = db.currentSheedUser;
         }
-//        // in case you want to get some arguments:
-//        if (getArguments() != null) {
-//            // sheedUser = (SheedUser) getArguments().getSerializable(SHEED_USER);
-//        }
     }
 
     @Override
@@ -77,9 +78,42 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-//        TextView text = view.findViewById(R.id.profile_head_title);
-//        text.setText("user retrieved from database: " + sheedUser.firstName + " " + sheedUser.lastName);
+        name = view.findViewById(R.id.name);
+        matches = view.findViewById(R.id.matches);
+        edit_button = view.findViewById(R.id.edit_button);
+        img = view.findViewById(R.id.img);
+
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        fillRhsUser(sheedUser);
+    }
+
+    void fillRhsUser(SheedUser sheedUser)
+    {
+        name.setText(sheedUser.firstName);
+        Picasso.with(getContext()).load(sheedUser.imageUrl).into(img);
+
+        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        img.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+
+        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
+                setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        img.setVisibility(View.VISIBLE);
+                    }
+                }).start();
+
+        matches.setText( sheedUser.matchesMade.size()  + "\nmatches");
     }
 }
 
@@ -149,31 +183,7 @@ public class ProfileFragment extends Fragment {
 //    }
 //
 //
-//    void fillRhsUser(SheedUser sheedUser)
-//    {
-//        name.setText(sheedUser.firstName);
-//        Picasso.with(this).load(sheedUser.imageUrl).into(img);
-//
-//        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
-//                setListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        img.setVisibility(View.VISIBLE);
-//                    }
-//                }).start();
-//
-//        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
-//                setListener(new AnimatorListenerAdapter() {
-//                    @Override
-//                    public void onAnimationEnd(Animator animation) {
-//                        img.setVisibility(View.VISIBLE);
-//                    }
-//                }).start();
-//
-//
-//        matches.setText( sheedUser.num_matches  + "\nmatches");
-//
-//    }
+
 //
 //
 //

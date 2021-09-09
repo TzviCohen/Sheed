@@ -64,15 +64,12 @@ public class ActivityStart extends AppCompatActivity {
 
 
         sign_in.setOnClickListener(v -> {
-            System.out.println(emailIn);
-            System.out.println("calllll");
-//            db.checkMail(emailIn);
-
-//            db.checkMail(emailIn);
+            db.saveUserIdToSP(emailIn);
+            Intent signActivityIntent = new Intent(context, MainActivity.class);
+            startActivity(signActivityIntent);
         });
 
         sign_up.setOnClickListener(v -> {
-
             Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
             startActivity(signActivityIntent);
         });

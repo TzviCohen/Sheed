@@ -94,15 +94,16 @@ public class SheedUsersDB {
         editor.apply();
     }
 
-    public void removeUserIdFromSP(String userId) {
+    public void removeUserIdFromSP() {
         SharedPreferences.Editor editor = this.spForUserId.edit();
-        editor.remove(userId);
+        editor.remove(USER_ID_KEY);
         editor.apply();
     }
 
 
     public void addUser(SheedUser sheedUser) {
-        String userId = UUID.randomUUID().toString();
+//        String userId = UUID.randomUUID().toString();
+        String userId = sheedUser.email;
 //        SheedUser sheedUser = new SheedUser(firstName, lastName, age, gender, interestedIn, imageUrl);
         fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).set(sheedUser).addOnSuccessListener(documentSnapshot -> {
 

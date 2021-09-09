@@ -399,10 +399,11 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
             SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, url, emailIn);
             db.addUser(sheedUser);
 
+            db.saveUserIdToSP(emailIn);
 
-//            Intent profileActivityIntent = new Intent(context, ProfileActivity.class);
-//            profileActivityIntent.putExtra(USER_INTENT_SERIALIZABLE_KEY, sheedUser);
-//            startActivity(profileActivityIntent);
+
+            Intent profileActivityIntent = new Intent(context, MainActivity.class);
+            startActivity(profileActivityIntent);
 
 
 

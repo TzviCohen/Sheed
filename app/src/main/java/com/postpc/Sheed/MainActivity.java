@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,7 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
-import com.postpc.Sheed.yourMatches.YourMatchesFragement;
+import com.postpc.Sheed.yourMatches.YourMatchesFragment;
 
 import static com.postpc.Sheed.Utils.USER1_EMAIL;
 
@@ -43,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //TODO: remove the following debugging line:
-        db.saveUserIdToSP(USER1_EMAIL);
-
+//        db.saveUserIdToSP(USER1_EMAIL);
+//        db.removeUserIdFromSP();
         String userId = db.getIdFromSP();
         if (userId == null)
         {
@@ -53,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
             // but for now im going to MatchActivity just for test
 
-            bottomNavigationView = findViewById(R.id.bottomNavigationView);
-            bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-            bottomNavigationView.setSelectedItemId(R.id.make_match);
-//            Intent matchActivityIntent = new Intent(context, MatchActivity.class);
-//            startActivity(matchActivityIntent);
+//            bottomNavigationView = findViewById(R.id.bottomNavigationView);
+//            bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+//            bottomNavigationView.setSelectedItemId(R.id.make_match);
+            Intent matchActivityIntent = new Intent(context, ActivityStart.class);
+            startActivity(matchActivityIntent);
             return;
 
         }
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     ProfileFragment profileFragment = ProfileFragment.newInstance();
-    YourMatchesFragement yourMatchesFragement = YourMatchesFragement.newInstance();
+    YourMatchesFragment yourMatchesFragement = YourMatchesFragment.newInstance();
     MakeMatchesFragment makeMatchesFragment = MakeMatchesFragment.newInstance();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
