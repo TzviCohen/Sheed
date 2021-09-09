@@ -10,11 +10,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.Query;
 import com.postpc.Sheed.SheedUser;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,6 +33,7 @@ public class SheedUsersDB {
     SharedPreferences spForUserId;
 
     public SheedUser currentSheedUser;
+    public ArrayList<SheedUser> userFriends;
 
     public SheedUsersDB(Context context) {
         this.context = context;
@@ -114,6 +117,28 @@ public class SheedUsersDB {
         }).
                 addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
     }
+
+    public void updateUser(SheedUser updatedUser){
+
+        fireStoreApp.collection(FS_USERS_COLLECTION).document(updatedUser.email).set(updatedUser);
+    }
+
+    public void setFriends(SheedUser user1, SheedUser user2){
+        user1.community.add(user2.email);
+        user2.community.add(user1.email);
+
+        updateUser(user1);
+        updateUser(user2);
+    }
+
+    public void loadCurrentFriends(){
+
+        fireStoreApp.collection(FS_USERS_COLLECTION).whereIn("email", currentSheedUser.community).
+                get().
+                addOnSuccessListener(queryDocumentSnapshots ->
+                        userFriends = (ArrayList<SheedUser>) queryDocumentSnapshots.toObjects(SheedUser.class));
+    }
+
 
 
 }

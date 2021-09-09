@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.postpc.Sheed.database.SheedUsersDB;
@@ -44,21 +45,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //TODO: remove the following debugging line:
-//        db.saveUserIdToSP(USER1_EMAIL);
+        //db.saveUserIdToSP("fake@mail");
 //        db.removeUserIdFromSP();
         String userId = db.getIdFromSP();
         if (userId == null)
         {
             Log.i(TAG, "user id from sp is null");
-            // go to registration page
-
-            // but for now im going to MatchActivity just for test
-
-//            bottomNavigationView = findViewById(R.id.bottomNavigationView);
-//            bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-//            bottomNavigationView.setSelectedItemId(R.id.make_match);
-            Intent matchActivityIntent = new Intent(context, ActivityStart.class);
-            startActivity(matchActivityIntent);
+            Intent launchActivity = new Intent(context, ActivityStart.class);
+            startActivity(launchActivity);
             return;
 
         }
@@ -71,8 +65,19 @@ public class MainActivity extends AppCompatActivity {
 
             db.downloadUserAndDo(userId, sheedUser -> {
             // get the user from db and move to make matches screen
-                db.currentSheedUser = sheedUser;
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
+                if (sheedUser == null)
+                {
+                    Toast.makeText(this, "The user " + userId + " does not exists in App Data Base", Toast.LENGTH_LONG).show();
+                    db.removeUserIdFromSP();
+                    Intent mainActivity = new Intent(context, MainActivity.class);
+                    startActivity(mainActivity);
+                }
+                else
+                {
+                    db.currentSheedUser = sheedUser;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
+                }
+
             });
         }
     }

@@ -24,7 +24,8 @@
         <activity android:name=".ActivityStart" />
         <activity android:name=".ActivitySignIn" />
         <activity android:name=".ActivityAddPhoto" />
-<!--        <activity android:name="" />-->
+        <activity android:name=".AddFriendsActivity"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
     </application>
 
 </manifest>

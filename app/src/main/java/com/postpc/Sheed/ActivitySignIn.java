@@ -416,6 +416,11 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
 
             checkTurn();
         });
+
+        addFriend.setOnClickListener(v -> {
+            Intent addFriendsActivity = new Intent(context, AddFriendsActivity.class);
+            startActivity(addFriendsActivity);
+        });
     }
 
 

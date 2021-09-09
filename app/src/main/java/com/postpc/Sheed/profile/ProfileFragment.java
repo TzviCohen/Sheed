@@ -14,10 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.postpc.Sheed.AddFriendsActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
@@ -41,6 +43,7 @@ public class ProfileFragment extends Fragment {
     TextView matches;
     ImageButton edit_button;
     ShapeableImageView img;
+    Button addFriendsButton;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -82,6 +85,7 @@ public class ProfileFragment extends Fragment {
         matches = view.findViewById(R.id.matches);
         edit_button = view.findViewById(R.id.edit_button);
         img = view.findViewById(R.id.img);
+        addFriendsButton = view.findViewById(R.id.add_friends_profile);
 
         return view;
     }
@@ -90,6 +94,10 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         fillRhsUser(sheedUser);
+        addFriendsButton.setOnClickListener(v -> {
+            Intent addFriendsActivity = new Intent(getContext(), AddFriendsActivity.class);
+            startActivity(addFriendsActivity);
+        });
     }
 
     void fillRhsUser(SheedUser sheedUser)
