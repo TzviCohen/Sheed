@@ -17,15 +17,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/useImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             card_view:srcCompat="@mipmap/ic_launcher"
+            card_view:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
             />
 
     <LinearLayout

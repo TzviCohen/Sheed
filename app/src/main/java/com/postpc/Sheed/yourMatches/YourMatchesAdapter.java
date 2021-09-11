@@ -15,6 +15,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.database.SheedUsersDB;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         db.downloadUserAndDo(userId, sheedUser -> {
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString());
-            holder.matchMadeBy.setText("Made by\n" + matchMadeBy);
-//            Picasso.with(context).load(sheedUser.imageUrl).noFade().into(holder.userImage);
+            holder.matchMadeBy.setText("Matched by\n" + matchMadeBy);
+            Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
     }
 
@@ -71,10 +72,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             userName = itemView.findViewById(R.id.userName);
             userAge = itemView.findViewById(R.id.userAge);
             matchMadeBy = itemView.findViewById(R.id.matchMadeBy);
-//            Picasso.with(this).load(itemView.imageUrl).into(profileImage);
-
-
-            // Picasso.with(this).load(sheedUser.imageUrl).into(lhsImage);
+            userImage = itemView.findViewById(R.id.useImage);
             chatButton = itemView.findViewById(R.id.chatButton);
         }
     }
