@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.AddFriendsActivity;
+import com.postpc.Sheed.MainActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
@@ -44,6 +45,7 @@ public class ProfileFragment extends Fragment {
     ImageButton edit_button;
     ShapeableImageView img;
     Button addFriendsButton;
+    Button logoutButton;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -86,6 +88,7 @@ public class ProfileFragment extends Fragment {
         edit_button = view.findViewById(R.id.edit_button);
         img = view.findViewById(R.id.img);
         addFriendsButton = view.findViewById(R.id.add_friends_profile);
+        logoutButton = view.findViewById(R.id.logout);
 
         return view;
     }
@@ -97,6 +100,15 @@ public class ProfileFragment extends Fragment {
         addFriendsButton.setOnClickListener(v -> {
             Intent addFriendsActivity = new Intent(getContext(), AddFriendsActivity.class);
             startActivity(addFriendsActivity);
+        });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.removeUserIdFromSP();
+                Intent mainActivity = new Intent(getContext(), MainActivity.class);
+                startActivity(mainActivity);
+            }
         });
     }
 

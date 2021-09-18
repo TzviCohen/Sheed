@@ -13,6 +13,11 @@ public interface Utils {
     String USER1_EMAIL = "chandler@gmail.com";
     String USER2_EMAIL = "monica@gmail.com";
 
+    String WORKER_LAST_I = "worker_last_i";
+    String WORKER_LAST_J = "worker_last_j";
+    String WORK_MANAGER_TAG = "MakeMatches";
+
+    String WORKER_DIFF_ARRAY = "diff_array";
 
     int SECOND = 1000;
 

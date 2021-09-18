@@ -5,6 +5,7 @@ import android.media.Image;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 enum Gender
@@ -27,6 +28,7 @@ public class SheedUser implements Serializable {
     public List<String> community;
     public List<String> matches;
     public List<String> matchesMade;
+    public List<String> pairsToSuggest;
 
     public String id;
     public String email;
@@ -50,6 +52,8 @@ public class SheedUser implements Serializable {
         community = new ArrayList<>();
         matches = new ArrayList<>();
         matchesMade = new ArrayList<>();
+        pairsToSuggest = new ArrayList<>();
+
 
 
     }
@@ -71,6 +75,29 @@ public class SheedUser implements Serializable {
         community = new ArrayList<>();
         matches = new ArrayList<>();
         matchesMade = new ArrayList<>();
+        pairsToSuggest = new ArrayList<>();
+
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SheedUser sheedUser = (SheedUser) o;
+        return id.equals(sheedUser.id) &&
+                email.equals(sheedUser.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 }

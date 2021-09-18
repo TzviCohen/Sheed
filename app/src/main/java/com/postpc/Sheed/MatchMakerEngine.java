@@ -1,16 +1,22 @@
 package com.postpc.Sheed;
 
+import android.util.Log;
+import android.util.Pair;
+
 import com.postpc.Sheed.database.SheedUsersDB;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 
 import static com.postpc.Sheed.Utils.USER1_EMAIL;
 import static com.postpc.Sheed.Utils.USER1_TEST;
 import static com.postpc.Sheed.Utils.USER2_EMAIL;
 import static com.postpc.Sheed.Utils.USER2_TEST;
+import static com.postpc.Sheed.makeMatches.FindMatchWorker.String2Pair;
 
 public class MatchMakerEngine {
 
@@ -27,37 +33,29 @@ public class MatchMakerEngine {
         return new ArrayList<>(Arrays.asList(USER1_EMAIL, USER2_EMAIL));
     }
 
-    static List<String> makeMatch(List<String> community)
+    public static Pair<SheedUser, SheedUser> getMatchFromWorker()
     {
-
-        Random ran = new Random();
-        Integer communitySize = community.size();
-        Boolean legalMatch = false;
-        String user1Id = null, user2Id = null;
-
-        while (!legalMatch)
+        Queue<String> formattedPairs = new LinkedList<>(db.currentSheedUser.pairsToSuggest);
+        String pair = formattedPairs.poll();
+        if (pair != null)
         {
-            user1Id = community.get(ran.nextInt(communitySize));
-            user2Id = community.get(ran.nextInt(communitySize));
-            legalMatch = isLegalMatch(user1Id, user2Id);
+            Pair<String, String> pairStr = String2Pair(pair);
+            db.currentSheedUser.pairsToSuggest = new ArrayList<>(formattedPairs);
+            db.updateUser(db.currentSheedUser);
+
+            if (pairStr != null && db.userFriendsMap != null)
+            {
+                SheedUser user1 = db.userFriendsMap.get(pairStr.first);
+                SheedUser user2 = db.userFriendsMap.get(pairStr.second);
+                return new Pair<>(user1, user2);
+            }
+            else
+            {
+                Log.d("MatchEngine", "string2pair method failed");
+            }
+
+
         }
-
-        return new ArrayList<>(Arrays.asList(user1Id, user2Id));
+        return null;
     }
-
-    static Boolean isLegalMatch(String user1Id, String user2Id){
-
-        if (user1Id.equals(user2Id)) {
-            return false;
-        }
-
-        Gender user1Gender = db.downloadUserAndQuery(user1Id, genderQuery);
-        Gender user2Gender = db.downloadUserAndQuery(user2Id, genderQuery);
-
-        Gender user1interestedIn = db.downloadUserAndQuery(user1Id, interestedInQuery);
-        Gender user2interestedIn = db.downloadUserAndQuery(user2Id, interestedInQuery);
-
-        return user1Gender == user2interestedIn && user2Gender == user1interestedIn;
-    }
-
 }

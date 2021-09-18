@@ -109,5 +109,16 @@
         android:id="@+id/swipe_detector"
         />
 
+    <TextView
+        android:id="@+id/match_not_found_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="24sp"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

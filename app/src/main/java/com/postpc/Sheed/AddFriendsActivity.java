@@ -68,15 +68,26 @@ public class AddFriendsActivity extends AppCompatActivity {
 
             // Good input - parse to long, start activities and set Views states.
             db.downloadUserAndDo(friendEmail, friendUser -> {
+
+                String toastText;
                 if (friendUser == null)
                 {
-                    Toast.makeText(SheedApp.instance, "User does not exists in Sheed", Toast.LENGTH_LONG).show();
+                    toastText =  "User does not exists in Sheed";
+                }
+                else if (friendUser.email.equals(db.currentSheedUser.email))
+                {
+                    toastText = "You can't be a friend with yourself";
+                }
+                else if (db.currentSheedUser.community.contains(friendUser.email))
+                {
+                    toastText = "You and " + friendUser.firstName + " are already friends on Sheed";
                 }
                 else
                 {
                     db.setFriends(db.currentSheedUser, friendUser);
-                    Toast.makeText(SheedApp.instance, "You and " + friendUser.firstName + " are now friends on Sheed", Toast.LENGTH_LONG).show();
+                    toastText = "You and " + friendUser.firstName + " are now friends on Sheed";
                 }
+                Toast.makeText(SheedApp.instance, toastText, Toast.LENGTH_LONG).show();
             });
 
             finish();

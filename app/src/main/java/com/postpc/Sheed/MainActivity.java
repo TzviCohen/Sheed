@@ -1,22 +1,34 @@
 package com.postpc.Sheed;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.work.Data;
+import androidx.work.WorkInfo;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
 import com.postpc.Sheed.yourMatches.YourMatchesFragment;
 
+import java.util.List;
+import java.util.UUID;
+
 import static com.postpc.Sheed.Utils.USER1_EMAIL;
+import static com.postpc.Sheed.Utils.WORKER_LAST_I;
+import static com.postpc.Sheed.Utils.WORKER_LAST_J;
+import static com.postpc.Sheed.Utils.WORK_MANAGER_TAG;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     SheedUser sheedUser;
     private final static String TAG = "SheedApp Main Activity";
+    ListenerRegistration currentUserCommunityListener;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try{
@@ -75,10 +89,26 @@ public class MainActivity extends AppCompatActivity {
                 else
                 {
                     db.currentSheedUser = sheedUser;
+                    currentUserCommunityListener = db.listenToCommunityChanges();
+                    db.loadCurrentFriends(new ProcessUserList() {
+                        @Override
+                        public void process(List<SheedUser> sheedUsers) {
+                            // do noting - only make sure that list is up to date
+                        }
+                    });
                     getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
                 }
 
             });
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentUserCommunityListener != null)
+        {
+            currentUserCommunityListener.remove();
         }
     }
 
@@ -106,4 +136,6 @@ public class MainActivity extends AppCompatActivity {
                     return false;
                 }
             };
+
+
 }

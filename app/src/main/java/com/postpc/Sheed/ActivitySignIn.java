@@ -246,8 +246,6 @@
 
 package com.postpc.Sheed;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -260,17 +258,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.database.SheedUsersDB;
 
-import java.lang.reflect.Array;
-
-import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -331,7 +325,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         lastName = findViewById(R.id.lastName);
         age = findViewById(R.id.age);
 
-        addFriend = findViewById(R.id.add_friends);
+        //addFriend = findViewById(R.id.add_friends);
         answer_q = findViewById(R.id.answer_q);
         sign = findViewById(R.id.sign);
         sign.setEnabled(false);
@@ -372,7 +366,13 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             public void onTextChanged(CharSequence s, int start, int before, int count) { }
             public void afterTextChanged(Editable s) {
-                ageIn = Integer.parseInt(age.getText().toString());
+                try {
+                    ageIn = Integer.parseInt(age.getText().toString());
+                }
+                catch (NumberFormatException e){
+                    ageIn = 0;
+                }
+
                 checkTurn();
             }
         });
@@ -397,17 +397,22 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         sign.setOnClickListener(v -> {
 
             SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, url, emailIn);
-            db.addUser(sheedUser);
+            db.downloadUserAndDo(sheedUser.email, sheedUser1 -> {
 
-            db.saveUserIdToSP(emailIn);
+                boolean userAlreadyExists = sheedUser1 != null;
+                if (userAlreadyExists)
+                {
+                    Toast.makeText(context, "The email address " + sheedUser1.email + " has already been used ", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    db.addUser(sheedUser);
+                    db.saveUserIdToSP(emailIn);
+                    Intent profileActivityIntent = new Intent(context, MainActivity.class);
+                    startActivity(profileActivityIntent);
 
-
-            Intent profileActivityIntent = new Intent(context, MainActivity.class);
-            startActivity(profileActivityIntent);
-
-
-
-
+                }
+            });
         });
 
         img.setOnClickListener(v -> {
@@ -417,11 +422,12 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
             checkTurn();
         });
 
-        addFriend.setOnClickListener(v -> {
-            Intent addFriendsActivity = new Intent(context, AddFriendsActivity.class);
-            startActivity(addFriendsActivity);
-        });
+//        addFriend.setOnClickListener(v -> {
+//            Intent addFriendsActivity = new Intent(context, AddFriendsActivity.class);
+//            startActivity(addFriendsActivity);
+//        });
     }
+
 
 
 

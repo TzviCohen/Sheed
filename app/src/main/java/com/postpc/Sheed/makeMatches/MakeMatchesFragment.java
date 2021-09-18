@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static android.view.View.GONE;
 import static com.postpc.Sheed.Utils.SECOND;
 
 /**
@@ -46,6 +48,7 @@ public class MakeMatchesFragment extends Fragment {
     ImageButton declineMatchFab;
     TextView headerView;
     View swipeDetector;
+    TextView matchesNotFoundView;
 
     boolean isFirstIterRhs = true;
     boolean isFirstIterLhs = true;
@@ -81,6 +84,7 @@ public class MakeMatchesFragment extends Fragment {
         isFirstIterLhs = true;
         header_approval_count = 0;
 
+        matchesNotFoundView.setVisibility(GONE);
         matchLoopExecutorHelper();
 
         acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
@@ -132,11 +136,17 @@ public class MakeMatchesFragment extends Fragment {
 
         swipeDetector = view.findViewById(R.id.swipe_detector);
 
+        matchesNotFoundView = view.findViewById(R.id.match_not_found_view);
+
         return view;
     }
 
     private void fillRhsUser(SheedUser sheedUser)
     {
+        rhsImage.setVisibility(View.VISIBLE);
+        rhsNameView.setVisibility(View.VISIBLE);
+        matchesNotFoundView.setVisibility(GONE);
+
         rhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(rhsImage);
         float translationValue = (isFirstIterRhs) ? 0f : 360f;
@@ -164,6 +174,10 @@ public class MakeMatchesFragment extends Fragment {
 
     private void fillLhsUser(SheedUser sheedUser)
     {
+
+        rhsImage.setVisibility(View.VISIBLE);
+        rhsNameView.setVisibility(View.VISIBLE);
+        matchesNotFoundView.setVisibility(GONE);
 
         lhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(lhsImage);
@@ -194,11 +208,26 @@ public class MakeMatchesFragment extends Fragment {
     private void matchLoopExecutorHelper(){
 
         // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
-        List<String> matchFound = MatchMakerEngine.makeMatch();
-        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
+//        List<String> matchFound = MatchMakerEngine.makeMatch();
+//        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
 
-        db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
-        db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
+        Pair<SheedUser, SheedUser> matchFound = MatchMakerEngine.getMatchFromWorker();
+        if (matchFound == null)
+        {
+            onMatchesNotFound();
+        }
+        else
+        {
+            int delay = (isFirstIterLhs && isFirstIterRhs) ? 0 : 1;
+            Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                fillLhsUser(matchFound.first);
+                fillRhsUser(matchFound.second);
+            }, delay * SECOND);
+        }
+
+        //db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
+        //db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
     }
 
     private void showHeader(){
@@ -244,7 +273,7 @@ public class MakeMatchesFragment extends Fragment {
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        rhsNameView.setVisibility(View.GONE);
+                        rhsNameView.setVisibility(GONE);
                     }
                 }).start();
 
@@ -252,7 +281,7 @@ public class MakeMatchesFragment extends Fragment {
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        rhsImage.setVisibility(View.GONE);
+                        rhsImage.setVisibility(GONE);
                     }
                 }).start();
 
@@ -260,7 +289,7 @@ public class MakeMatchesFragment extends Fragment {
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        lhsNameView.setVisibility(View.GONE);
+                        lhsNameView.setVisibility(GONE);
                     }
                 }).start();
 
@@ -269,11 +298,22 @@ public class MakeMatchesFragment extends Fragment {
                 setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        lhsImage.setVisibility(View.GONE);
+                        lhsImage.setVisibility(GONE);
                     }
                 }).start();
 
         matchLoopExecutor(1);
 
+    }
+
+    private void onMatchesNotFound(){
+
+        lhsImage.setVisibility(GONE);
+        lhsNameView.setVisibility(GONE);
+        rhsImage.setVisibility(GONE);
+        rhsNameView.setVisibility(GONE);
+
+        matchesNotFoundView.setVisibility(View.VISIBLE);
+        matchesNotFoundView.setText("No Matches are available, please add more friends");
     }
 }

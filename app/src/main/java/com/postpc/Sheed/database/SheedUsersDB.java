@@ -1,28 +1,49 @@
 package com.postpc.Sheed.database;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.postpc.Sheed.ProcessUserInFS;
+import com.postpc.Sheed.ProcessUserList;
 import com.postpc.Sheed.Query;
 import com.postpc.Sheed.SheedUser;
+import com.postpc.Sheed.makeMatches.FindMatchWorker;
+import com.postpc.Sheed.makeMatches.MakeMatchesJob;
 
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
 import static com.postpc.Sheed.Utils.SP_KEY_FOR_USER_ID;
 import static com.postpc.Sheed.Utils.USER_ID_KEY;
+import static com.postpc.Sheed.Utils.WORKER_DIFF_ARRAY;
+import static com.postpc.Sheed.Utils.WORKER_LAST_I;
+import static com.postpc.Sheed.Utils.WORKER_LAST_J;
+import static com.postpc.Sheed.Utils.WORK_MANAGER_TAG;
 
 public class SheedUsersDB {
 
@@ -32,13 +53,17 @@ public class SheedUsersDB {
     FirebaseFirestore fireStoreApp;
     SharedPreferences spForUserId;
 
+    public WorkManager workManager;
     public SheedUser currentSheedUser;
-    public ArrayList<SheedUser> userFriends;
+    public Map<String, SheedUser> userFriendsMap;
+    public List<String> lastSnapshot;
 
     public SheedUsersDB(Context context) {
         this.context = context;
         this.fireStoreApp = FirebaseFirestore.getInstance();
         spForUserId = context.getSharedPreferences(SP_KEY_FOR_USER_ID, Context.MODE_PRIVATE);
+        workManager = WorkManager.getInstance(context);
+        lastSnapshot = null;
     }
 
 
@@ -124,6 +149,15 @@ public class SheedUsersDB {
     }
 
     public void setFriends(SheedUser user1, SheedUser user2){
+
+        if (user1.equals(user2)){   // user can't be a friend with himself
+            return;
+        }
+        if (user1.community.contains(user2.email))
+        {
+            return;
+        }
+
         user1.community.add(user2.email);
         user2.community.add(user1.email);
 
@@ -131,14 +165,105 @@ public class SheedUsersDB {
         updateUser(user2);
     }
 
-    public void loadCurrentFriends(){
 
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void loadCurrentFriends(ProcessUserList userListProcessor){
+
+        if (currentSheedUser.community.isEmpty())
+        {
+            return;
+        }
         fireStoreApp.collection(FS_USERS_COLLECTION).whereIn("email", currentSheedUser.community).
-                get().
-                addOnSuccessListener(queryDocumentSnapshots ->
-                        userFriends = (ArrayList<SheedUser>) queryDocumentSnapshots.toObjects(SheedUser.class));
+                get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+
+                    List<SheedUser> friendsObj = queryDocumentSnapshots.toObjects(SheedUser.class);
+                    userFriendsMap = new HashMap<>();
+                    for (SheedUser friend : friendsObj){
+                        userFriendsMap.put(friend.getEmail(), friend);
+                    }
+                    userListProcessor.process(friendsObj);
+                });
+
+    }
+
+    private void enqueueJob(MakeMatchesJob makeMatchesJob, List<String> diffArray){
+
+        Long millis = makeMatchesJob.getTimeCreated();
+        String[] diff = diffArray.toArray(new String[0]);
+
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(FindMatchWorker.class).
+                setInputData(new Data.Builder()
+                        .putInt(WORKER_LAST_I, makeMatchesJob.getLastI())
+                        .putStringArray(WORKER_DIFF_ARRAY, diff)
+                        .putInt(WORKER_LAST_J, makeMatchesJob.getLastJ()).
+                                build()).addTag(WORK_MANAGER_TAG).build();
+
+        makeMatchesJob.setWorkerId(workRequest.getId());
+
+        // update SP and notify LiveData
+        workManager.enqueueUniqueWork(millis.toString(), ExistingWorkPolicy.KEEP, workRequest);
+
+        //Log.d("DB", "work " + number + " enqueued");
+    }
+
+    private void enqueueNewJob(List<String> oldCommunity, List<String> newCommunity){
+
+        ArrayList<String> diffArray;
+        if (oldCommunity == null) {
+            diffArray =  new ArrayList<>(newCommunity);
+        }
+        else if (oldCommunity.size() > newCommunity.size()) {
+            diffArray = new ArrayList<>();
+        }
+        else{       // community got larger
+            diffArray = new ArrayList<>(newCommunity);
+            diffArray.removeAll(oldCommunity);
+        }
+
+        enqueueJob(new MakeMatchesJob(newCommunity.size()), diffArray);
+    }
+
+    public ListenerRegistration listenToCommunityChanges(){
+
+        if (currentSheedUser == null)
+        {
+            return null;
+        }
+
+        String id = currentSheedUser.email;
+        final DocumentReference document = fireStoreApp.collection(FS_USERS_COLLECTION).document(id);
+        return document.addSnapshotListener((snapshot, error) -> {
+
+            if (error != null) {
+                return;
+            }
+            if (snapshot == null) {
+                return;
+            }
+            if (!snapshot.exists()) {
+                return;
+            } else {
+                SheedUser updatedUser = snapshot.toObject(SheedUser.class);
+                if (updatedUser == null) {
+                    return;
+                }
+                else if (!updatedUser.community.equals(lastSnapshot)){
+                    currentSheedUser = updatedUser;
+                    enqueueNewJob(lastSnapshot, updatedUser.community);
+                    lastSnapshot = updatedUser.community;
+                    Log.d("DB", "match worker job enqueued");
+                    return;
+                }
+
+                currentSheedUser = updatedUser;
+
+            }
+        });
     }
 
 
 
-}
+    }
