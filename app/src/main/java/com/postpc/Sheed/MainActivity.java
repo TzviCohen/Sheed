@@ -1,26 +1,23 @@
 package com.postpc.Sheed;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.work.Data;
-import androidx.work.WorkInfo;
-
+import androidx.fragment.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.Toast;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
 import com.postpc.Sheed.yourMatches.YourMatchesFragment;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -32,14 +29,14 @@ import static com.postpc.Sheed.Utils.WORK_MANAGER_TAG;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String TAG = "SheedApp Main Activity";
     SheedUsersDB db;
     Context context;
     BottomNavigationView bottomNavigationView;
     SheedUser sheedUser;
-    private final static String TAG = "SheedApp Main Activity";
+    ImageButton backButton;
     ListenerRegistration currentUserCommunityListener;
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try{
@@ -51,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(v->{
+            onBackPressed();
+        });
 
         context = this;
         if (db == null)
@@ -90,12 +91,14 @@ public class MainActivity extends AppCompatActivity {
                 {
                     db.currentSheedUser = sheedUser;
                     currentUserCommunityListener = db.listenToCommunityChanges();
-                    db.loadCurrentFriends(new ProcessUserList() {
-                        @Override
-                        public void process(List<SheedUser> sheedUsers) {
-                            // do noting - only make sure that list is up to date
-                        }
-                    });
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
+                        db.loadCurrentFriends(new ProcessUserList() {
+                            @Override
+                            public void process(List<SheedUser> sheedUsers) {
+                                // do noting - only make sure that list is up to date
+                            }
+                        });
+                    }
                     getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
                 }
 
@@ -122,20 +125,42 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.profile:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, profileFragment).addToBackStack(String.valueOf(R.id.profile)).commit();
                             return true;
 
                         case R.id.make_matches_navigate:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).addToBackStack(String.valueOf(R.id.make_matches_navigate)).commit();
                             return true;
 
                         case R.id.your_matches_navigate:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, yourMatchesFragement).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, yourMatchesFragement).addToBackStack(String.valueOf(R.id.your_matches_navigate)).commit();
                             return true;
                     }
                     return false;
                 }
             };
 
+    @Override
+    public void onBackPressed() {
+        Log.i(TAG, "back stack size: " + getSupportFragmentManager().getBackStackEntryCount());
 
+        int stackSize = getSupportFragmentManager().getBackStackEntryCount();
+        if (stackSize > 0) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if(stackSize > 1){
+                int idx = stackSize - 2;
+                String prevPage = fragmentManager.getBackStackEntryAt(idx).getName();
+                Log.i(TAG, "last page was " + prevPage);
+                updateNavigationBarState(Integer.parseInt(prevPage));
+        }
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void updateNavigationBarState(int actionId){
+        Menu menu = bottomNavigationView.getMenu();
+        menu.findItem(actionId).setChecked(true);
+    }
 }

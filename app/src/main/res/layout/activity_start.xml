@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
 
     <RelativeLayout
@@ -81,64 +82,78 @@
 
     <TextView
         android:id="@+id/welcome"
-
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="212dp"
-        android:text="welcome"
+        android:gravity="center"
+        android:text="welcome new sheed"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@id/imgs"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="24sp" />
 
-    <EditText
-        android:id="@+id/email"
-        android:layout_width="356dp"
-        android:layout_height="41dp"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="196dp"
-        android:layout_marginEnd="28dp"
-        android:hint="Enter Your Email Here"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
 
-        app:layout_constraintEnd_toEndOf="@+id/welcome"
-        app:layout_constraintTop_toBottomOf="@+id/welcome" />
+        <EditText
+            android:id="@+id/email"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter Your Email"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/input_text_edit_text_shape"
+            android:padding="16dp"
+            android:layout_marginVertical="48dp"
+            android:layout_marginHorizontal="32dp"
+            android:textSize="18sp"
+            android:textColor="@color/almost_black" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/sign_in"
+            android:layout_width="220dp"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="16dp"
+            style="@style/sheedPrimaryButton"
+            android:text="Sign In"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/sign_up"/>
+
+        <Button
+            android:id="@+id/sign_up"
+            android:layout_width="220dp"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp"
+            android:backgroundTint="@color/almost_white"
+            style="@style/sheedPrimaryButton"
+            android:text="Sign Up"
+            android:textAllCaps="false"
+            android:textColor="@color/orange_primary"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sign_in" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <Button
-        android:id="@+id/sign_in"
-        android:layout_width="183dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="348dp"
-        android:layout_marginEnd="112dp"
-        android:text="sign in"
-
-        app:layout_constraintEnd_toEndOf="@+id/welcome"
-        app:layout_constraintTop_toBottomOf="@+id/welcome" />
-
-    <Button
-        android:id="@+id/sign_up"
-        android:layout_width="183dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="444dp"
-        android:layout_marginEnd="108dp"
-        android:text="sign up"
-
-        app:layout_constraintEnd_toEndOf="@+id/welcome"
-        app:layout_constraintTop_toBottomOf="@+id/welcome" />
-
-    <!--    <Button-->
-<!--        android:id="@+id/sign_up"-->
-<!--        android:layout_width="197dp"-->
-<!--        android:layout_height="49dp"-->
-<!--        android:layout_marginTop="436dp"-->
-<!--        android:layout_marginEnd="104dp"-->
-<!--        android:text="sign up"-->
-
-<!--        app:layout_constraintEnd_toEndOf="@+id/welcome"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/welcome" />-->
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

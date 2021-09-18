@@ -2,8 +2,12 @@ package com.postpc.Sheed.makeMatches;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 
@@ -20,6 +24,7 @@ import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.MatchMakerEngine;
+import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
@@ -38,18 +43,21 @@ public class MakeMatchesFragment extends Fragment {
 
     private final static String TAG = "Sheed MakeMatches Frag";
     private final static int HEADER_APPROVAL_NUM = 4;
+    private final static String PAGE_TITLE = "Sheed";
 
     private SheedUser sheedUser;
     SheedUsersDB db;
 
     TextView rhsNameView;
     TextView lhsNameView;
+    TextView page_title;
     ShapeableImageView rhsImage;
     ShapeableImageView lhsImage;
     ImageButton acceptMatchFab;
     ImageButton declineMatchFab;
     TextView headerView;
     View swipeDetector;
+    ImageButton backButton;
     TextView matchesNotFoundView;
 
     boolean isFirstIterRhs = true;
@@ -142,17 +150,34 @@ public class MakeMatchesFragment extends Fragment {
         rhsNameView = view.findViewById(R.id.rhs_name);
         lhsNameView = view.findViewById(R.id.lhs_name);
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+            setPageTitle();
+        }
+        backButton = getActivity().findViewById(R.id.back_button);
+        backButton.setOnClickListener(v->{
+            getActivity().onBackPressed();
+        });
+
         rhsImage = view.findViewById(R.id.rhs_img);
         lhsImage = view.findViewById(R.id.lhs_img);
 
-        acceptMatchFab = view.findViewById(R.id.make_match);
-        declineMatchFab = view.findViewById(R.id.not_make_match);
+        acceptMatchFab = view.findViewById(R.id.like_button);
+        declineMatchFab = view.findViewById(R.id.dislike_button);
 
         swipeDetector = view.findViewById(R.id.swipe_detector);
 
         matchesNotFoundView = view.findViewById(R.id.match_not_found_view);
 
         return view;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void setPageTitle() {
+        page_title = getActivity().findViewById(R.id.page_title);
+        page_title.setTypeface(getResources().getFont(R.font.milla_cilla));
+        page_title.setText(PAGE_TITLE);
+        page_title.setTextSize(40);
+        page_title.setTextColor(Color.parseColor(Utils.PRIMARY_ORANGE));
     }
 
     private void fillRhsUser(SheedUser sheedUser)

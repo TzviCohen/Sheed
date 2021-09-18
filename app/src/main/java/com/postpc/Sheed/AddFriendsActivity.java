@@ -1,10 +1,14 @@
 package com.postpc.Sheed;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -20,14 +24,16 @@ public class AddFriendsActivity extends AppCompatActivity {
     String userInput;
     SheedUsersDB db;
 
-
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setContentView(R.layout.activity_add_friend);
 
         EditText enterFriendEmailView = findViewById(R.id.enter_root_view);
-        Button fabApprove = findViewById(R.id.fab_approve);
+        TextView fabApprove = findViewById(R.id.fab_approve);
+        TextView fabCancel = findViewById(R.id.fab_cancel);
         fabApprove.setEnabled(true);
         enterFriendEmailView.setFocusable(true);
         if (db == null)
@@ -51,6 +57,10 @@ public class AddFriendsActivity extends AppCompatActivity {
                 fabApprove.setEnabled(isValidInput);
                 userInput = newText;
             }
+        });
+
+        fabCancel.setOnClickListener(v -> {
+            finish();
         });
 
         // set click-listener to the button
@@ -92,6 +102,8 @@ public class AddFriendsActivity extends AppCompatActivity {
 
             finish();
         });
+
+
     }
 
     public static boolean isValidEmailAddress(String email) {

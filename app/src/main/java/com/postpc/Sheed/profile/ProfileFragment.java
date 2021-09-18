@@ -3,8 +3,11 @@ package com.postpc.Sheed.profile;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,11 +22,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.postpc.Sheed.ActivityStart;
 import com.postpc.Sheed.AddFriendsActivity;
-import com.postpc.Sheed.MainActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
+import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
@@ -39,13 +43,16 @@ public class ProfileFragment extends Fragment {
     private final static String TAG = "SheedApp Profile Frag";
 
     private SheedUser sheedUser;
+    private final static String PAGE_TITLE = "Profile";
     SheedUsersDB db;
     TextView name;
     TextView matches;
+    TextView friends;
+    TextView log_out;
+    TextView page_title;
     ImageButton edit_button;
     ShapeableImageView img;
     Button addFriendsButton;
-    Button logoutButton;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -75,6 +82,7 @@ public class ProfileFragment extends Fragment {
                 db = SheedApp.getDB();
             }
             sheedUser = db.currentSheedUser;
+            Log.i(TAG, "current user: " + sheedUser);
         }
     }
 
@@ -85,12 +93,22 @@ public class ProfileFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         name = view.findViewById(R.id.name);
         matches = view.findViewById(R.id.matches);
+        friends = view.findViewById(R.id.friends);
+        log_out = view.findViewById(R.id.log_out);
+        setPageTitle();
         edit_button = view.findViewById(R.id.edit_button);
         img = view.findViewById(R.id.img);
         addFriendsButton = view.findViewById(R.id.add_friends_profile);
-        logoutButton = view.findViewById(R.id.logout);
 
         return view;
+    }
+
+    private void setPageTitle() {
+        page_title = getActivity().findViewById(R.id.page_title);
+        page_title.setTypeface(Typeface.SANS_SERIF);
+        page_title.setText(PAGE_TITLE);
+        page_title.setTextSize(24);
+        page_title.setTextColor(Color.parseColor(Utils.ALMOST_BLACK));
     }
 
     @Override
@@ -102,13 +120,10 @@ public class ProfileFragment extends Fragment {
             startActivity(addFriendsActivity);
         });
 
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                db.removeUserIdFromSP();
-                Intent mainActivity = new Intent(getContext(), MainActivity.class);
-                startActivity(mainActivity);
-            }
+        log_out.setOnClickListener(v ->{
+            db.removeUserIdFromSP();
+            Intent launchActivity = new Intent(getContext(), ActivityStart.class);
+            startActivity(launchActivity);
         });
     }
 
@@ -133,7 +148,9 @@ public class ProfileFragment extends Fragment {
                     }
                 }).start();
 
-        matches.setText( sheedUser.matchesMade.size()  + "\nmatches");
+        matches.setText( sheedUser.matchesMade.size()  + " matches");
+
+        friends.setText(sheedUser.community.size() + " friends");
     }
 }
 

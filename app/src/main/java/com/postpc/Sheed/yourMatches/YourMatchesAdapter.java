@@ -57,6 +57,9 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         String matchMadeBy = matchDescriptor.getMatcherName();
 
         db.downloadUserAndDo(userId, sheedUser -> {
+            if(sheedUser.equals(null)){
+                return;
+            }
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString());
             holder.matchMadeBy.setText("Matched by\n" + matchMadeBy);

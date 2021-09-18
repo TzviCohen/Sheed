@@ -93,8 +93,11 @@ public class SheedUsersDB {
     }
 
     public void downloadUserAndDo(String userId , ProcessUserInFS processUserInFS ) {
-
+        Log.i(TAG, "download user info of user: " + userId);
         fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if(!documentSnapshot.exists()){
+                processUserInFS.process(null);
+            }
             SheedUser userObj = documentSnapshot.toObject(SheedUser.class);
 
             // upon download success apply processFunc

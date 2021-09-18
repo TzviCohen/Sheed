@@ -19,5 +19,7 @@
 
     <string name="chat">Chat</string>
 
+    <string name="log_out"><u>Log Out</u> </string>
+
 
 </resources>

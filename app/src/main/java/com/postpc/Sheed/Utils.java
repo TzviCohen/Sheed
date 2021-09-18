@@ -23,4 +23,8 @@ public interface Utils {
 
     int SECOND = 1000;
 
+    // style:
+    String PRIMARY_ORANGE = "#FFC107";
+    String ALMOST_BLACK = "#303030";
+
 }

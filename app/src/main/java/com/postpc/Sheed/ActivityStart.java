@@ -60,9 +60,6 @@ public class ActivityStart extends AppCompatActivity {
             }
         });
 
-
-
-
         sign_in.setOnClickListener(v -> {
             db.saveUserIdToSP(emailIn);
             Intent signActivityIntent = new Intent(context, MainActivity.class);
