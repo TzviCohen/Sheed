@@ -2,7 +2,6 @@ package com.postpc.Sheed.yourMatches;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
@@ -22,6 +19,7 @@ import com.postpc.Sheed.Chat.MessageFragment;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.database.SheedUsersDB;
+import com.postpc.Sheed.makeMatches.MatchDescriptor;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -30,13 +28,14 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
 
     Context context;
     SheedUsersDB db;
-    List<String> users;
-    List<String> matchMadeByArray;
+//    List<String> users;
+//    List<String> matchMadeByArray;
+    List<String> matchesDescriptors;
 
-    public YourMatchesAdapter(Context c, List<String> usersId, List<String> matchMadeBy) {
+    public YourMatchesAdapter(Context c, List<String> matchesDescriptors) {
         context = c;
-        users = usersId;
-        matchMadeByArray = matchMadeBy;
+        this.matchesDescriptors = matchesDescriptors;
+//        matchMadeByArray = matchMadeBy;
         db = SheedApp.getDB();
     }
 
@@ -51,8 +50,12 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-        String userId = users.get(position);
-        String matchMadeBy = matchMadeByArray.get(position);
+//        String userId = users.get(position);
+//        String matchMadeBy = matchMadeByArray.get(position);
+        MatchDescriptor matchDescriptor = MatchDescriptor.fromString(matchesDescriptors.get(position));
+        String userId = matchDescriptor.getMatchedWith(db.currentSheedUser.email);
+        String matchMadeBy = matchDescriptor.getMatcherName();
+
         db.downloadUserAndDo(userId, sheedUser -> {
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString());
@@ -75,7 +78,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return matchesDescriptors.size();
     }
 
     public static class viewHolder extends RecyclerView.ViewHolder {

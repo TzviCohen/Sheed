@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import android.os.Handler;
 import android.util.Pair;
@@ -56,6 +55,8 @@ public class MakeMatchesFragment extends Fragment {
     boolean isFirstIterRhs = true;
     boolean isFirstIterLhs = true;
     private int headerApprovalCount = 0;
+
+    Pair<SheedUser, SheedUser> suggestedMatch;
 
 
 
@@ -223,8 +224,8 @@ public class MakeMatchesFragment extends Fragment {
 //        List<String> matchFound = MatchMakerEngine.makeMatch();
 //        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
 
-        Pair<SheedUser, SheedUser> matchFound = MatchMakerEngine.getMatchFromWorker();
-        if (matchFound == null)
+        suggestedMatch = MatchMakerEngine.getMatchFromWorker();
+        if (suggestedMatch == null)
         {
             onMatchesNotFound();
         }
@@ -233,8 +234,8 @@ public class MakeMatchesFragment extends Fragment {
             int delay = (isFirstIterLhs && isFirstIterRhs) ? 0 : 1;
             Handler handler = new Handler();
             handler.postDelayed(() -> {
-                fillLhsUser(matchFound.first);
-                fillRhsUser(matchFound.second);
+                fillLhsUser(suggestedMatch.first);
+                fillRhsUser(suggestedMatch.second);
             }, delay * SECOND);
         }
 
@@ -258,8 +259,9 @@ public class MakeMatchesFragment extends Fragment {
         // Can add animations
 
         // Update DB to let users know they have been matched
-
-
+        if (suggestedMatch != null){
+            db.setMatched(suggestedMatch.first, suggestedMatch.second, db.currentSheedUser);
+        }
         headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
         roundEndRoutine();
     }

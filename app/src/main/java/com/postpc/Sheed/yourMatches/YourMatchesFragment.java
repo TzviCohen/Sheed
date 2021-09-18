@@ -69,10 +69,10 @@ public class YourMatchesFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerYourMatchesList);
 
         List<String> userIdMatches = sheedUser.matches;
-        List<String> matchMadeBy = sheedUser.matchesMade;
+        //List<String> matchMadeBy = sheedUser.matchesMade;
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-        YourMatchesAdapter adapter = new YourMatchesAdapter(getActivity(), userIdMatches, matchMadeBy);
+        YourMatchesAdapter adapter = new YourMatchesAdapter(getActivity(), userIdMatches);
         recyclerView.setAdapter(adapter);
 
         return view;

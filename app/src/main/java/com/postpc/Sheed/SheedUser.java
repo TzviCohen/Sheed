@@ -100,4 +100,8 @@ public class SheedUser implements Serializable {
     public String getEmail() {
         return email;
     }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

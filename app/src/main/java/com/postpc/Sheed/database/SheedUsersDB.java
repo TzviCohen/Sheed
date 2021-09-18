@@ -30,6 +30,7 @@ import com.postpc.Sheed.Query;
 import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.makeMatches.FindMatchWorker;
 import com.postpc.Sheed.makeMatches.MakeMatchesJob;
+import com.postpc.Sheed.makeMatches.MatchDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -162,19 +163,31 @@ public class SheedUsersDB {
 
     public void setFriends(SheedUser user1, SheedUser user2){
 
-        if (user1.equals(user2)){   // user can't be a friend with himself
-            return;
-        }
-        if (user1.community.contains(user2.email))
-        {
-            return;
-        }
-
         user1.community.add(user2.email);
         user2.community.add(user1.email);
 
         updateUser(user1);
         updateUser(user2);
+    }
+
+    public void setMatched(SheedUser user1, SheedUser user2, SheedUser matcher){
+
+        String descriptorAsStr = new MatchDescriptor(user1.email, user2.email, matcher.email,
+                matcher.getFullName()).toString();
+
+        if (user1.matches.contains(descriptorAsStr) || user2.matches.contains(descriptorAsStr) ||
+                matcher.matchesMade.contains(descriptorAsStr))
+        {
+            return;
+        }
+
+        user1.matches.add(descriptorAsStr);
+        user2.matches.add(descriptorAsStr);
+        matcher.matchesMade.add(descriptorAsStr);
+
+        updateUser(user1);
+        updateUser(user2);
+        updateUser(matcher);
     }
 
 
