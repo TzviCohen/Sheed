@@ -27,6 +27,7 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static com.postpc.Sheed.Utils.SECOND;
 
 /**
@@ -87,8 +88,9 @@ public class MakeMatchesFragment extends Fragment {
         headerApprovalCount = 0;
         final boolean[] waitingForFS = {true};
 
+        setUsersViewVisibility(GONE);
+        onMatchesNotFound();
 
-        matchesNotFoundView.setVisibility(GONE);
         final LiveData<HashMap<String, SheedUser>> communityLiveData = db.getCommunityLiveData();
         communityLiveData.observe(getViewLifecycleOwner(), stringSheedUserHashMap -> {
             if (waitingForFS[0]){
@@ -154,10 +156,6 @@ public class MakeMatchesFragment extends Fragment {
 
     private void fillRhsUser(SheedUser sheedUser)
     {
-        rhsImage.setVisibility(View.VISIBLE);
-        rhsNameView.setVisibility(View.VISIBLE);
-        matchesNotFoundView.setVisibility(GONE);
-
         rhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(rhsImage);
         float translationValue = (isFirstIterRhs) ? 0f : 360f;
@@ -181,15 +179,14 @@ public class MakeMatchesFragment extends Fragment {
                 }).start();
 
         isFirstIterRhs = false;
-    }
-
-    private void fillLhsUser(SheedUser sheedUser)
-    {
 
         rhsImage.setVisibility(View.VISIBLE);
         rhsNameView.setVisibility(View.VISIBLE);
         matchesNotFoundView.setVisibility(GONE);
+    }
 
+    private void fillLhsUser(SheedUser sheedUser)
+    {
         lhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(lhsImage);
 
@@ -214,6 +211,10 @@ public class MakeMatchesFragment extends Fragment {
                 }).start();
 
         isFirstIterLhs = false;
+
+        lhsImage.setVisibility(View.VISIBLE);
+        lhsNameView.setVisibility(View.VISIBLE);
+        matchesNotFoundView.setVisibility(GONE);
     }
 
     private void matchLoopExecutorHelper(){
@@ -257,7 +258,7 @@ public class MakeMatchesFragment extends Fragment {
         // Can add animations
 
         // Update DB to let users know they have been matched
-        
+
 
         headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
         roundEndRoutine();
@@ -319,12 +320,20 @@ public class MakeMatchesFragment extends Fragment {
 
     private void onMatchesNotFound(){
 
-        lhsImage.setVisibility(GONE);
-        lhsNameView.setVisibility(GONE);
-        rhsImage.setVisibility(GONE);
-        rhsNameView.setVisibility(GONE);
+        setUsersViewVisibility(GONE);
 
         matchesNotFoundView.setVisibility(View.VISIBLE);
         matchesNotFoundView.setText("No Matches are available, please add more friends");
+    }
+
+    private void setUsersViewVisibility(int status){
+
+        if (status == GONE || status == VISIBLE){
+            lhsImage.setVisibility(status);
+            lhsNameView.setVisibility(status);
+            rhsImage.setVisibility(status);
+            rhsNameView.setVisibility(status);
+        }
+
     }
 }
