@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -58,14 +60,24 @@ public class SheedUsersDB {
     public Map<String, SheedUser> userFriendsMap;
     public List<String> lastSnapshot;
 
+    private LiveData<HashMap<String, SheedUser>> communityLiveData;
+    private MutableLiveData<HashMap<String, SheedUser>> communityLiveDataMutable;
+
     public SheedUsersDB(Context context) {
+
         this.context = context;
         this.fireStoreApp = FirebaseFirestore.getInstance();
         spForUserId = context.getSharedPreferences(SP_KEY_FOR_USER_ID, Context.MODE_PRIVATE);
         workManager = WorkManager.getInstance(context);
+        this.communityLiveDataMutable = new MutableLiveData<>();
+        this.communityLiveData = this.communityLiveDataMutable;
+
         lastSnapshot = null;
     }
 
+    public LiveData<HashMap<String, SheedUser>> getCommunityLiveData(){
+        return this.communityLiveData;
+    }
 
     // TODO : tune this function with Yaheli
     public boolean isUserExists(String userId){
@@ -184,6 +196,7 @@ public class SheedUsersDB {
                     for (SheedUser friend : friendsObj){
                         userFriendsMap.put(friend.getEmail(), friend);
                     }
+                    communityLiveDataMutable.setValue((HashMap<String, SheedUser>) userFriendsMap);
                     userListProcessor.process(friendsObj);
                 });
 

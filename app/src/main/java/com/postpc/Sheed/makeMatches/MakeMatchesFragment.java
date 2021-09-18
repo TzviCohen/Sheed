@@ -5,6 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import android.os.Handler;
 import android.util.Pair;
@@ -22,7 +24,7 @@ import com.postpc.Sheed.MatchMakerEngine;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import java.util.HashMap;
 
 import static android.view.View.GONE;
 import static com.postpc.Sheed.Utils.SECOND;
@@ -52,7 +54,7 @@ public class MakeMatchesFragment extends Fragment {
 
     boolean isFirstIterRhs = true;
     boolean isFirstIterLhs = true;
-    private int header_approval_count = 0;
+    private int headerApprovalCount = 0;
 
 
 
@@ -82,10 +84,19 @@ public class MakeMatchesFragment extends Fragment {
 
         isFirstIterRhs = true;
         isFirstIterLhs = true;
-        header_approval_count = 0;
+        headerApprovalCount = 0;
+        final boolean[] waitingForFS = {true};
+
 
         matchesNotFoundView.setVisibility(GONE);
-        matchLoopExecutorHelper();
+        final LiveData<HashMap<String, SheedUser>> communityLiveData = db.getCommunityLiveData();
+        communityLiveData.observe(getViewLifecycleOwner(), stringSheedUserHashMap -> {
+            if (waitingForFS[0]){
+                matchLoopExecutorHelper();
+                waitingForFS[0] = false;
+            }
+
+        });
 
         acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
         declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
@@ -231,12 +242,12 @@ public class MakeMatchesFragment extends Fragment {
     }
 
     private void showHeader(){
-        header_approval_count++;
-        if (header_approval_count == HEADER_APPROVAL_NUM)
+        headerApprovalCount++;
+        if (headerApprovalCount == HEADER_APPROVAL_NUM)
         {
             headerView.setText("We think it's a great match !");
             headerView.setVisibility(View.VISIBLE);
-            header_approval_count = 0;
+            headerApprovalCount = 0;
         }
 
     }
