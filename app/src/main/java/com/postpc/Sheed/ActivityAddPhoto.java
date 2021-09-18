@@ -35,6 +35,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
+import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
 import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
 public class ActivityAddPhoto extends AppCompatActivity {
@@ -56,35 +57,22 @@ public class ActivityAddPhoto extends AppCompatActivity {
         setContentView(R.layout.activity_add_photo);
         mButtonChooseImage = findViewById(R.id.button_choose_image);
         mButtonUpload = findViewById(R.id.button_upload);
-        mTextViewShowUploads = findViewById(R.id.text_view_show_uploads);
-        mEditTextFileName = findViewById(R.id.edit_text_file_name);
+        //mTextViewShowUploads = findViewById(R.id.text_view_show_uploads);
+        //mEditTextFileName = findViewById(R.id.edit_text_file_name);
         mImageView = findViewById(R.id.image_view);
         mProgressBar = findViewById(R.id.progress_bar);
         mStorageRef = FirebaseStorage.getInstance().getReference("uploads");
         mDatabaseRef = FirebaseDatabase.getInstance().getReference("uploads");
-        context =this;
+        context = this;
 
-        mButtonChooseImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileChooser();
+        mButtonChooseImage.setOnClickListener(v -> openFileChooser());
+        mButtonUpload.setOnClickListener(v -> {
+            if (mUploadTask != null && mUploadTask.isInProgress()) {
+                Toast.makeText(ActivityAddPhoto.this, "Upload in progress", Toast.LENGTH_SHORT).show();
+            } else {
+                uploadFile();
             }
-        });
-        mButtonUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(ActivityAddPhoto.this, "Upload in progress", Toast.LENGTH_SHORT).show();
-                } else {
-                    uploadFile();
-                }
 
-            }
-        });
-        mTextViewShowUploads.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
         });
     }
     private void openFileChooser() {
@@ -121,7 +109,7 @@ public class ActivityAddPhoto extends AppCompatActivity {
                         mStorageRef.child(file_name).getDownloadUrl().addOnSuccessListener(uri -> {
                             Toast.makeText(ActivityAddPhoto.this, "uploaded image successfully", Toast.LENGTH_LONG).show();
                             Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
-                            signActivityIntent.putExtra("url", uri.toString());
+                            signActivityIntent.putExtra(IMAGE_URL_INTENT, uri.toString());
                             startActivity(signActivityIntent);
                         }).addOnFailureListener(e -> Toast.makeText(ActivityAddPhoto.this, e.getMessage(), Toast.LENGTH_SHORT).show());
 

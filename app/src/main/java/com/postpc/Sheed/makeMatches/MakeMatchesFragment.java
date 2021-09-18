@@ -257,7 +257,7 @@ public class MakeMatchesFragment extends Fragment {
         // Can add animations
 
         // Update DB to let users know they have been matched
-
+        
 
         headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
         roundEndRoutine();

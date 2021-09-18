@@ -19,6 +19,8 @@ public interface Utils {
 
     String WORKER_DIFF_ARRAY = "diff_array";
 
+    String IMAGE_URL_INTENT = "img_url";
+
     int SECOND = 1000;
 
 }

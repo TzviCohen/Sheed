@@ -263,15 +263,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.postpc.Sheed.database.SheedUsersDB;
+import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
 
 public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     SheedUser currentUser;
     SheedUsersDB db;
 
-    String url;
+    String imageUrl;
     public String firstNameIn = "";
     public String lastNameIn = "";
     public String emailIn = "";
@@ -306,7 +307,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         context = this;
 
         Intent intentOpenedMe = getIntent();
-        url = intentOpenedMe.getStringExtra("url");
+        imageUrl = intentOpenedMe.getStringExtra(IMAGE_URL_INTENT);
 
         Spinner spinner = findViewById(R.id.gender);
         adapter = ArrayAdapter.createFromResource(this, R.array.gender, android.R.layout.simple_spinner_item);
@@ -331,6 +332,11 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         sign.setEnabled(false);
         img = findViewById(R.id.image);
         email = findViewById(R.id.email);
+
+        if (imageUrl != null){
+            Picasso.with(this).load(imageUrl).centerCrop().fit().into(img);
+        }
+
 
         firstName.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -396,7 +402,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
 
         sign.setOnClickListener(v -> {
 
-            SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, url, emailIn);
+            SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, imageUrl, emailIn);
             db.downloadUserAndDo(sheedUser.email, sheedUser1 -> {
 
                 boolean userAlreadyExists = sheedUser1 != null;
@@ -416,8 +422,8 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         });
 
         img.setOnClickListener(v -> {
-            Intent matchActivityIntent = new Intent(context, ActivityAddPhoto.class);
-            startActivity(matchActivityIntent);
+            Intent activityAddPhoto = new Intent(context, ActivityAddPhoto.class);
+            startActivity(activityAddPhoto);
 
             checkTurn();
         });

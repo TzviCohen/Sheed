@@ -115,7 +115,7 @@ public class ProfileFragment extends Fragment {
     void fillRhsUser(SheedUser sheedUser)
     {
         name.setText(sheedUser.firstName);
-        Picasso.with(getContext()).load(sheedUser.imageUrl).into(img);
+        Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(img);
 
         img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
                 setListener(new AnimatorListenerAdapter() {
