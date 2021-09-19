@@ -327,7 +327,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         age = findViewById(R.id.age);
 
         //addFriend = findViewById(R.id.add_friends);
-        answer_q = findViewById(R.id.answer_q);
+//        answer_q = findViewById(R.id.answer_q);
         sign = findViewById(R.id.sign);
         sign.setEnabled(false);
         img = findViewById(R.id.image);
@@ -429,10 +429,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
             checkTurn();
         });
 
-//        addFriend.setOnClickListener(v -> {
-//            Intent addFriendsActivity = new Intent(context, AddFriendsActivity.class);
-//            startActivity(addFriendsActivity);
-//        });
+
     }
 
 
@@ -484,9 +481,12 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
     }
 
     public void checkTurn(){
-        if (!firstNameIn.equals("") & !lastNameIn.equals("") & !emailIn.equals("") & ageIn != 0 & (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ) & (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED )){
+        if (!firstNameIn.equals("") & !lastNameIn.equals("") & !emailIn.equals("") & imageUrl != null & ageIn != 0 & (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ) & (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED )){
             sign.setEnabled(true);
         }
     }
+
+
+
 
 }
