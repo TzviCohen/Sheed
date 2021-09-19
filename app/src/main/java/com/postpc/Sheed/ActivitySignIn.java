@@ -423,6 +423,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
 
         img.setOnClickListener(v -> {
             Intent activityAddPhoto = new Intent(context, ActivityAddPhoto.class);
+            activityAddPhoto.putExtra("check","sign");
             startActivity(activityAddPhoto);
 
             checkTurn();

@@ -2,11 +2,16 @@ package com.postpc.Sheed.profile;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +27,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.postpc.Sheed.ActivityAddPhoto;
 import com.postpc.Sheed.ActivityStart;
 import com.postpc.Sheed.AddFriendsActivity;
 import com.postpc.Sheed.R;
@@ -31,6 +37,7 @@ import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
+import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
 import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
 /**
@@ -54,6 +61,8 @@ public class ProfileFragment extends Fragment {
     ShapeableImageView img;
     Button addFriendsButton;
 
+
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -76,6 +85,21 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+//        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+//                new ActivityResultContracts.StartActivityForResult(),
+//                new ActivityResultCallback<ActivityResult>() {
+//                    @Override
+//                    public void onActivityResult(ActivityResult result) {
+//                        if (result.getResultCode() == Activity.RESULT_OK) {
+//                            // There are no request codes
+//                            Intent data = result.getData();
+//                            fillRhsUser(sheedUser);
+//                        }
+//                    }
+//                });
+
+
+        System.out.println("!!!!");
         super.onCreate(savedInstanceState);
         if(sheedUser == null) {
             if (db == null) {
@@ -89,6 +113,17 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+//        if(getArguments() != null){
+//            String imageUrl = getArguments().getString(IMAGE_URL_INTENT);
+//            if (imageUrl != null){
+//                db.currentSheedUser.imageUrl = imageUrl;
+//                db.updateUser(db.currentSheedUser);
+//                fillRhsUser(db.currentSheedUser);
+//            }
+//
+//        }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         name = view.findViewById(R.id.name);
@@ -114,6 +149,24 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Log.d("here1", "here1");
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            Log.d("here3", "here3");
+                            // There are no request codes
+                            Intent data = result.getData();
+                            fillRhsUser(db.currentSheedUser);
+                            sheedUser = db.currentSheedUser;
+                        }
+                    }
+                });
+
+
         fillRhsUser(sheedUser);
         addFriendsButton.setOnClickListener(v -> {
             Intent addFriendsActivity = new Intent(getContext(), AddFriendsActivity.class);
@@ -125,7 +178,69 @@ public class ProfileFragment extends Fragment {
             Intent launchActivity = new Intent(getContext(), ActivityStart.class);
             startActivity(launchActivity);
         });
+
+        edit_button.setOnClickListener(v ->{
+//            Intent activityAddPhoto = new Intent(getContext(), ActivityAddPhoto.class);
+//            activityAddPhoto.putExtra("check","profile");
+//            startActivity(activityAddPhoto);
+//            Log.d("bla", "bla!1");
+//            fillRhsUser(sheedUser);
+//            Log.d("bla", "bla!2");
+
+            openSomeActivityForResult(someActivityResultLauncher);
+
+        });
+
+
     }
+
+//    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+//            new ActivityResultContracts.StartActivityForResult(),
+//            new ActivityResultCallback<ActivityResult>() {
+//                @Override
+//                public void onActivityResult(ActivityResult result) {
+//                    if (result.getResultCode() == Activity.RESULT_OK) {
+//                        // There are no request codes
+//                        Intent data = result.getData();
+//                        fillRhsUser(sheedUser);
+//                    }
+//                }
+//            });
+    public void openSomeActivityForResult(ActivityResultLauncher<Intent> someActivityResultLauncher) {
+        Log.d("here2", "here2");
+        Intent intent = new Intent(getContext(), ActivityAddPhoto.class);
+        intent.putExtra("check","profile");
+        someActivityResultLauncher.launch(intent);
+    }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 1){
+//            fillRhsUser(sheedUser);
+//        }
+//    }
+
+
+
+//    ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+//            new ActivityResultContracts.StartActivityForResult(),
+//            new ActivityResultCallback<ActivityResult>() {
+//                @Override
+//                public void onActivityResult(ActivityResult result) {
+//                    if (result.getResultCode() == Activity.RESULT_OK) {
+//                        // There are no request codes
+//                        Intent data = result.getData();
+//                        fillRhsUser(sheedUser);
+//                    }
+//                }
+//            });
+//
+//    public void openSomeActivityForResult() {
+//        Intent intent = new Intent(getContext(), ActivityAddPhoto.class);
+//        intent.putExtra("check","profile");
+//        someActivityResultLauncher.launch(intent);
+//    }
 
     void fillRhsUser(SheedUser sheedUser)
     {

@@ -1,7 +1,7 @@
-
-
 package com.postpc.Sheed;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,6 +33,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
+import com.postpc.Sheed.database.SheedUsersDB;
+import com.postpc.Sheed.profile.ProfileFragment;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -51,10 +55,22 @@ public class ActivityAddPhoto extends AppCompatActivity {
     private DatabaseReference mDatabaseRef;
     private StorageTask mUploadTask;
     Context context;
+    String check;
+
+    SheedUser currentUser;
+    SheedUsersDB db;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_photo);
+
+
+        Intent intentOpenedMe = getIntent();
+        check = intentOpenedMe.getStringExtra("check");
+
+
         mButtonChooseImage = findViewById(R.id.button_choose_image);
         mButtonUpload = findViewById(R.id.button_upload);
         //mTextViewShowUploads = findViewById(R.id.text_view_show_uploads);
@@ -108,9 +124,44 @@ public class ActivityAddPhoto extends AppCompatActivity {
 
                         mStorageRef.child(file_name).getDownloadUrl().addOnSuccessListener(uri -> {
                             Toast.makeText(ActivityAddPhoto.this, "uploaded image successfully", Toast.LENGTH_LONG).show();
-                            Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
-                            signActivityIntent.putExtra(IMAGE_URL_INTENT, uri.toString());
-                            startActivity(signActivityIntent);
+                            System.out.println("!!!!!!!!!!3");
+                            if (check.equals("sign")){
+                                System.out.println("!!!!!!!!!!1");
+                                Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
+                                signActivityIntent.putExtra(IMAGE_URL_INTENT, uri.toString());
+                                startActivity(signActivityIntent);
+                            } else {
+                                Log.d("bla", "bla!3");
+                                System.out.println("!!!!!!!!!!2");
+                                db = SheedApp.getDB();
+                                db.currentSheedUser.imageUrl = uri.toString();
+                                db.updateUser(db.currentSheedUser);
+//
+////                                Intent ProfileFragment = new Intent(context, ProfileFragment.class);
+////                                signActivityIntent.putExtra(IMAGE_URL_INTENT, uri.toString());
+////                                startActivity(ProfileFragment);
+//
+//
+                                setResult(RESULT_OK, getIntent());
+                                finish();
+                                return;
+
+
+//
+//                                Bundle bundle = new Bundle();
+//                                bundle.putString(IMAGE_URL_INTENT, uri.toString());
+//// set Fragmentclass Arguments
+//                                ProfileFragment fragObj = ProfileFragment.newInstance();
+//                                fragObj.setArguments(bundle);
+//
+//
+//                                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragObj).commit();
+
+
+                            }
+//                            Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
+//                            signActivityIntent.putExtra(IMAGE_URL_INTENT, uri.toString());
+//                            startActivity(signActivityIntent);
                         }).addOnFailureListener(e -> Toast.makeText(ActivityAddPhoto.this, e.getMessage(), Toast.LENGTH_SHORT).show());
 
                     })
