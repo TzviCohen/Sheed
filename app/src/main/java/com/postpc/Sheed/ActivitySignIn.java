@@ -260,6 +260,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.postpc.Sheed.database.SheedUsersDB;
@@ -332,6 +333,24 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
         sign.setEnabled(false);
         img = findViewById(R.id.image);
         email = findViewById(R.id.email);
+
+        if (imageUrl == null){
+            firstName.setVisibility(View.GONE);
+            lastName.setVisibility(View.GONE);
+            age.setVisibility(View.GONE);
+            email.setVisibility(View.GONE);
+            spinner.setVisibility(View.GONE);
+            spinner_interestedIn.setVisibility(View.GONE);
+
+        } else {
+            img.setEnabled(false);
+            firstName.setVisibility(View.VISIBLE);
+            lastName.setVisibility(View.VISIBLE);
+            age.setVisibility(View.VISIBLE);
+            email.setVisibility(View.VISIBLE);
+            spinner.setVisibility(View.VISIBLE);
+            spinner_interestedIn.setVisibility(View.VISIBLE);
+        }
 
         if (imageUrl != null){
             Picasso.with(this).load(imageUrl).centerCrop().fit().into(img);
@@ -426,6 +445,14 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
             activityAddPhoto.putExtra("check","sign");
             startActivity(activityAddPhoto);
 
+
+//            firstName.setVisibility(View.VISIBLE);
+//            lastName.setVisibility(View.VISIBLE);
+//            age.setVisibility(View.VISIBLE);
+//            email.setVisibility(View.VISIBLE);
+//            spinner.setVisibility(View.VISIBLE);
+//            spinner_interestedIn.setVisibility(View.VISIBLE);
+
             checkTurn();
         });
 
@@ -487,6 +514,27 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
     }
 
 
-
+//    @Override
+//    protected void onSaveInstanceState(@NonNull Bundle outState) {
+//        System.out.println("onSaveInstanceState");
+//        System.out.println(firstNameIn);
+//        super.onSaveInstanceState(outState);
+//        outState.putString("first_mane", firstNameIn);
+//
+//
+//
+//
+//    }
+//
+//    @Override
+//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+//        System.out.println("onRestoreInstanceState");
+//        super.onRestoreInstanceState(savedInstanceState);
+//        firstNameIn = savedInstanceState.getString("first_mane");
+//        firstName.setText(firstNameIn);
+//
+//
+//
+//    }
 
 }
