@@ -4,6 +4,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.postpc.Sheed.database.SheedUsersDB;
+import com.postpc.Sheed.makeMatches.MatchDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,12 +36,13 @@ public class MatchMakerEngine {
 
     public static Pair<SheedUser, SheedUser> getMatchFromWorker()
     {
-        Queue<String> formattedPairs = new LinkedList<>(db.currentSheedUser.pairsToSuggest);
-        String pair = formattedPairs.poll();
-        if (pair != null)
+        Queue<String> formattedPairs = new LinkedList<>(db.currentSheedUser.pairsToSuggestMap.keySet());
+        String keyMatch = formattedPairs.poll();
+        if (keyMatch != null)
         {
-            Pair<String, String> pairStr = String2Pair(pair);
-            db.currentSheedUser.pairsToSuggest = new ArrayList<>(formattedPairs);
+            Pair<String, String> pairStr = MatchDescriptor.keyToUsersIds(keyMatch);
+
+            db.currentSheedUser.pairsToSuggestMap.remove(keyMatch);
             db.updateUser(db.currentSheedUser);
 
             if (pairStr != null && db.userFriendsMap != null)
@@ -53,8 +55,6 @@ public class MatchMakerEngine {
             {
                 Log.d("MatchEngine", "string2pair method failed");
             }
-
-
         }
         return null;
     }

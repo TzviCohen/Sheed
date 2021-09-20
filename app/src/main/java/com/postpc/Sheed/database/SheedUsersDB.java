@@ -18,7 +18,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.gson.Gson;
-import com.postpc.Sheed.Chat.Chat;
 import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.ProcessUserList;
 import com.postpc.Sheed.Query;
@@ -31,10 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.postpc.Sheed.Utils.FS_CHATS_COLLECTION;
 import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
 import static com.postpc.Sheed.Utils.SP_KEY_FOR_USER_ID;
 import static com.postpc.Sheed.Utils.USER_ID_KEY;
@@ -180,22 +177,45 @@ public class SheedUsersDB {
 
     public void setMatched(SheedUser user1, SheedUser user2, SheedUser matcher){
 
-        String descriptorAsStr = new MatchDescriptor(user1.email, user2.email, matcher.email,
-                matcher.getFullName()).toString();
+        String matchKey = MatchDescriptor.getKey(user1.email, user2.email);
 
-        if (user1.matches.contains(descriptorAsStr) || user2.matches.contains(descriptorAsStr) ||
-                matcher.matchesMade.contains(descriptorAsStr))
-        {
-            return;
+        if (user1.matchesMap.containsKey(matchKey)) {
+            MatchDescriptor existingMatchDescriptor = MatchDescriptor.fromString(user1.matchesMap.get(matchKey));
+            existingMatchDescriptor.addMatcher(matcher.id, matcher.getFullName());
+
+            user1.matchesMap.put(matchKey, existingMatchDescriptor.toString());
+            user2.matchesMap.put(matchKey, existingMatchDescriptor.toString());
+
+            if (!matcher.matchesMadeMap.containsKey(matchKey)) // don't add it twice
+            {
+                matcher.matchesMadeMap.put(matchKey, existingMatchDescriptor.toString());
+                return;
+            }
         }
+        else{
 
-        user1.matches.add(descriptorAsStr);
-        user2.matches.add(descriptorAsStr);
-        matcher.matchesMade.add(descriptorAsStr);
+            MatchDescriptor matchDescriptor = new MatchDescriptor(user1.email, user2.email, matcher.email,
+                    matcher.getFullName());
+
+            String newMatchKey = matchDescriptor.getKey();
+
+            user1.matchesMap.put(newMatchKey, matchDescriptor.toString());
+            user2.matchesMap.put(newMatchKey, matchDescriptor.toString());
+            matcher.matchesMadeMap.put(newMatchKey, matchDescriptor.toString());
+        }
 
         updateUser(user1);
         updateUser(user2);
         updateUser(matcher);
+
+
+
+//
+//        user1.matches.add(descriptorAsStr);
+//        user2.matches.add(descriptorAsStr);
+//        matcher.matchesMade.add(descriptorAsStr);
+
+
     }
 
 

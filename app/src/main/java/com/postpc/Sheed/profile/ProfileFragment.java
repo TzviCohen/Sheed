@@ -49,7 +49,7 @@ public class ProfileFragment extends Fragment {
 
     private final static String TAG = "SheedApp Profile Frag";
 
-    private SheedUser sheedUser;
+    //private SheedUser sheedUser;
     private final static String PAGE_TITLE = "Profile";
     SheedUsersDB db;
     TextView name;
@@ -101,13 +101,13 @@ public class ProfileFragment extends Fragment {
 
         System.out.println("!!!!");
         super.onCreate(savedInstanceState);
-        if(sheedUser == null) {
-            if (db == null) {
+        //if(sheedUser == null) {
+        if (db == null) {
                 db = SheedApp.getDB();
-            }
-            sheedUser = db.currentSheedUser;
-            Log.i(TAG, "current user: " + sheedUser);
         }
+//            sheedUser = db.currentSheedUser;
+//            Log.i(TAG, "current user: " + sheedUser);
+
     }
 
     @Override
@@ -161,13 +161,13 @@ public class ProfileFragment extends Fragment {
                             // There are no request codes
                             Intent data = result.getData();
                             fillRhsUser(db.currentSheedUser);
-                            sheedUser = db.currentSheedUser;
+                            //sheedUser = db.currentSheedUser;
                         }
                     }
                 });
 
 
-        fillRhsUser(sheedUser);
+        fillRhsUser(db.currentSheedUser);
         addFriendsButton.setOnClickListener(v -> {
             Intent addFriendsActivity = new Intent(getContext(), AddFriendsActivity.class);
             startActivity(addFriendsActivity);
@@ -244,6 +244,8 @@ public class ProfileFragment extends Fragment {
 
     void fillRhsUser(SheedUser sheedUser)
     {
+        if (sheedUser == null) {return;}
+
         name.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(img);
 

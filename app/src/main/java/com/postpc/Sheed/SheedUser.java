@@ -1,9 +1,8 @@
 package com.postpc.Sheed;
 
-import android.media.Image;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,6 +25,10 @@ public class SheedUser implements Serializable {
 
 
     public List<String> community;
+    public HashMap<String, String> matchesMap;
+    public HashMap<String, String> matchesMadeMap;
+    public HashMap<String, String> pairsToSuggestMap;
+
     public List<String> matches;
     public List<String> matchesMade;
     public List<String> pairsToSuggest;
@@ -55,6 +58,11 @@ public class SheedUser implements Serializable {
         pairsToSuggest = new ArrayList<>();
 
 
+        matchesMap = new HashMap<>();
+        matchesMadeMap = new HashMap<>();
+        pairsToSuggestMap = new HashMap<>();
+
+
 
     }
 
@@ -76,6 +84,10 @@ public class SheedUser implements Serializable {
         matches = new ArrayList<>();
         matchesMade = new ArrayList<>();
         pairsToSuggest = new ArrayList<>();
+
+        matchesMap = new HashMap<>();
+        matchesMadeMap = new HashMap<>();
+        pairsToSuggestMap = new HashMap<>();
 
     }
 

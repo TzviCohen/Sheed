@@ -3,6 +3,7 @@ package com.postpc.Sheed.makeMatches;
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Build;
+import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -57,49 +58,59 @@ public class FindMatchWorker extends Worker {
 
     private void generateMatches(List<SheedUser> friends){
 
-        HashSet<String> matches = new HashSet<>(db.currentSheedUser.pairsToSuggest);
+        //HashSet<String> matches = new HashSet<>(db.currentSheedUser.pairsToSuggest);
         for (int i = lastI; i < friends.size(); i++){
             SheedUser user1 = friends.get(i);
+
             for (int j = 0; j < diffArrayList.size(); j++)
             {
-                Data data = new Data.Builder().putInt(WORKER_LAST_I, i).putInt(WORKER_LAST_J, j).build();
-                setProgressAsync(data);
-
+//                Data data = new Data.Builder().putInt(WORKER_LAST_I, i).putInt(WORKER_LAST_J, j).build();
+//                setProgressAsync(data);
                 SheedUser user2 = db.userFriendsMap.get(diffArrayList.get(j));
-                Pair<SheedUser, SheedUser> optionalMatch = new Pair<>(user1, user2);
-                if (isLegalMatch(optionalMatch)){
-                    String pairAsString = pair2String(optionalMatch);
-                    if (!matches.contains(pairAsString))
+                String matchKey = MatchDescriptor.getKey(user1.email, user2.email);
+
+
+                //Pair<SheedUser, SheedUser> optionalMatch = new Pair<>(user1, user2);
+                //String pairAsStr = pair2String(optionalMatch);
+                if (MatchDescriptor.isLegalMatch(user1, user2)){
+                    //String pairAsString = pair2String(optionalMatch);
+                    if (!db.currentSheedUser.pairsToSuggestMap.containsKey(matchKey))
                     {
-                        db.currentSheedUser.pairsToSuggest.add(pair2String(optionalMatch));
+                        MatchDescriptor toSuggest = new MatchDescriptor(user1.email, user2.email, db.currentSheedUser.email, db.currentSheedUser.getFullName());
+
+                        //db.currentSheedUser.pairsToSuggest.add(pair2String(optionalMatch));
+                        db.currentSheedUser.pairsToSuggestMap.put(matchKey, toSuggest.toString());
                         db.updateUser(db.currentSheedUser);
+                        Log.d("WORKER", "pair was added : " + matchKey);
+
+                    }
+                    else{
+                        Log.d("WORKER", "pair was not added since already is pairsToSuggest : " + matchKey);
                     }
                 }
+                else {
+                    Log.d("WORKER", "pair was not added since it's not legal : " + matchKey);
+                }
+
+
+
             }
         }
     }
 
-    static Boolean isLegalMatch(Pair<SheedUser, SheedUser> pair){
-
-        if (pair.first.equals(pair.second)) {
-            return false;
-        }
-        return pair.first.gender == pair.second.interestedIn &&
-                pair.second.gender == pair.first.interestedIn;
-    }
-
-    List<String> listOfPairs2List(List<Pair<String, String>> listOfPairs)
-    {
-        List<String> output = new ArrayList<>();
-        String pattern = "%s#%s";
-        for (Pair<String, String> pair : listOfPairs) {
-            output.add(String.format(pattern, pair.first, pair.second));
-        }
-        return output;
-    }
-
     String pair2String(Pair<SheedUser, SheedUser> pair){
-        return String.format(PAIR_PATTERN, pair.first.getEmail(), pair.second.getEmail());
+
+        // order the pair alphabetically to avoid the same suggestion twice
+        String first, second;
+        if (pair.first.email.compareTo(pair.second.email) < 0){
+            first = pair.first.email;
+            second = pair.second.email;
+        }
+        else{
+            first = pair.second.email;
+            second = pair.first.email;
+        }
+        return String.format(PAIR_PATTERN, first, second);
     }
 
     public static Pair<String, String> String2Pair(String str){
@@ -108,7 +119,6 @@ public class FindMatchWorker extends Worker {
         {
             return new Pair<>(ids[0], ids[1]);
         }
-
         return null;
     }
 
