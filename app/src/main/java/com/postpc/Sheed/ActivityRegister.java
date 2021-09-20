@@ -268,7 +268,7 @@ import com.squareup.picasso.Picasso;
 
 import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
 
-public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ActivityRegister extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     SheedUser currentUser;
     SheedUsersDB db;
@@ -300,7 +300,7 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sign_in_activity);
+        setContentView(R.layout.register_activity);
 
 //        sign.setEnabled(false);
 
@@ -413,8 +413,6 @@ public class ActivitySignIn extends AppCompatActivity implements AdapterView.OnI
                 emailIn = email.getText().toString();
                 checkTurn();
             }
-
-
         });
 
 

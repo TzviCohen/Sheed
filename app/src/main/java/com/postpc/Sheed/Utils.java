@@ -4,6 +4,7 @@ public interface Utils {
 
     String SP_KEY_FOR_USER_ID = "sp_user_id";
     String FS_USERS_COLLECTION = "users";
+    String FS_CHATS_COLLECTION = "chats";
     String USER_ID_KEY = "user_id";
     String USER_INTENT_SERIALIZABLE_KEY = "user_ser";
 
@@ -22,6 +23,10 @@ public interface Utils {
     String IMAGE_URL_INTENT = "img_url";
 
     int SECOND = 1000;
+
+    // chat:
+    int MSG_TYPE_LEFT = 0;
+    int MSG_TYPE_RIGHT = 1;
 
     // style:
     String PRIMARY_ORANGE = "#FFC107";

@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,17 +12,13 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
+import com.postpc.Sheed.Chat.Chat;
 import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.ProcessUserList;
 import com.postpc.Sheed.Query;
@@ -33,13 +28,13 @@ import com.postpc.Sheed.makeMatches.MakeMatchesJob;
 import com.postpc.Sheed.makeMatches.MatchDescriptor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
+import static com.postpc.Sheed.Utils.FS_CHATS_COLLECTION;
 import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
 import static com.postpc.Sheed.Utils.SP_KEY_FOR_USER_ID;
 import static com.postpc.Sheed.Utils.USER_ID_KEY;
@@ -144,7 +139,6 @@ public class SheedUsersDB {
         editor.apply();
     }
 
-
     public void addUser(SheedUser sheedUser) {
 //        String userId = UUID.randomUUID().toString();
         String userId = sheedUser.email;
@@ -157,6 +151,17 @@ public class SheedUsersDB {
 //            processUserInFS.process(userObj);
         }).
                 addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
+    }
+
+    public void addChatMessage(String senderId, String receiverId, String message) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", senderId);
+        hashMap.put("receiver", receiverId);
+        hashMap.put("message", message);
+
+        reference.child("Chats").push().setValue(hashMap);
     }
 
     public void updateUser(SheedUser updatedUser){

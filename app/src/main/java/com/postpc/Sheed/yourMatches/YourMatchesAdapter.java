@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
-import com.postpc.Sheed.Chat.MessageFragment;
+import com.postpc.Sheed.Chat.ChatFragment;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.database.SheedUsersDB;
@@ -43,7 +43,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
     @Override
     public viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.your_matches_single_profile_layout, parent, false);
+        View view = inflater.inflate(R.layout.your_matches_item, parent, false);
         return new viewHolder(view);
     }
 
@@ -70,9 +70,10 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
+//                bundle.putString("currentUser", userId);
                 bundle.putString("userId", userId);
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                Fragment messageFragment = new MessageFragment();
+                Fragment messageFragment = new ChatFragment();
                 messageFragment.setArguments(bundle);
                 activity.getSupportFragmentManager().beginTransaction().replace(R.id.container, messageFragment).addToBackStack(null).commit();
             }

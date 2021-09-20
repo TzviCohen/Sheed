@@ -22,7 +22,7 @@
         </activity>
 <!--        <activity android:name=".makeMatches.MatchActivity" />-->
         <activity android:name=".ActivityStart" />
-        <activity android:name=".ActivitySignIn" />
+        <activity android:name=".ActivityRegister" />
         <activity android:name=".ActivityAddPhoto" />
         <activity android:name=".AddFriendsActivity"
             android:theme="@style/Theme.AppCompat.Dialog.Alert"/>

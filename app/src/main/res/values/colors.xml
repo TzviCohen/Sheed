@@ -21,5 +21,7 @@
     <color name="green_like">#5ccc44</color>
     <color name="yellow_primary">#FFEB3B</color>
     <color name="orange_primary">#FFC107</color>
+    <color name="right_message">#785B04</color>
+    <color name="left_message">#FAE5A6</color>
 
 </resources>

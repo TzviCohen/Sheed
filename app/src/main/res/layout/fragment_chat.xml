@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Chat.MessageFragment"
+    tools:context=".Chat.ChatFragment"
     android:background="#D5D5D5">
 
     <com.google.android.material.appbar.AppBarLayout

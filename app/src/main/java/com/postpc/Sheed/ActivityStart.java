@@ -1,26 +1,17 @@
 package com.postpc.Sheed;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 //check
 import com.postpc.Sheed.database.SheedUsersDB;
-
-import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
 
 public class ActivityStart extends AppCompatActivity {
@@ -67,7 +58,7 @@ public class ActivityStart extends AppCompatActivity {
         });
 
         sign_up.setOnClickListener(v -> {
-            Intent signActivityIntent = new Intent(context, ActivitySignIn.class);
+            Intent signActivityIntent = new Intent(context, ActivityRegister.class);
             startActivity(signActivityIntent);
         });
 
