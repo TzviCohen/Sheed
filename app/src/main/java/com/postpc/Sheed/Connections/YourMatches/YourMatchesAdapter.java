@@ -1,8 +1,8 @@
-package com.postpc.Sheed.yourMatches;
+package com.postpc.Sheed.Connections.YourMatches;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +10,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
-import com.postpc.Sheed.Chat.ChatFragment;
+import com.postpc.Sheed.Chat.ChatActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.database.SheedUsersDB;
@@ -23,6 +21,8 @@ import com.postpc.Sheed.makeMatches.MatchDescriptor;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.viewHolder>{
 
@@ -61,7 +61,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
                 return;
             }
             holder.userName.setText(sheedUser.firstName);
-            holder.userAge.setText(sheedUser.age.toString());
+            holder.userAge.setText(sheedUser.age.toString() + " years old");
             holder.matchMadeBy.setText("Matched by\n" + matchMadeBy);
             Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
@@ -69,13 +69,9 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-//                bundle.putString("currentUser", userId);
-                bundle.putString("userId", userId);
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                Fragment messageFragment = new ChatFragment();
-                messageFragment.setArguments(bundle);
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.container, messageFragment).addToBackStack(null).commit();
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("userId", userId);
+                context.startActivity(intent);
             }
         });
     }
@@ -90,7 +86,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         TextView userName;
         TextView userAge;
         TextView matchMadeBy;
-        ShapeableImageView userImage;
+        CircleImageView userImage;
         Button chatButton;
 
         public viewHolder(@NonNull View itemView) {
@@ -98,7 +94,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             userName = itemView.findViewById(R.id.userName);
             userAge = itemView.findViewById(R.id.userAge);
             matchMadeBy = itemView.findViewById(R.id.matchMadeBy);
-            userImage = itemView.findViewById(R.id.useImage);
+            userImage = itemView.findViewById(R.id.userImage);
         }
     }
 }

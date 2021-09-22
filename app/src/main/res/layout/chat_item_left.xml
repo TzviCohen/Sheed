@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="3dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -13,6 +13,6 @@
         android:padding="8dp"
         android:textSize="18dp"
         android:id="@+id/show_message"
-        android:background="@drawable/background_left" />
+        android:background="@drawable/chat_background_left" />
 
 </RelativeLayout>

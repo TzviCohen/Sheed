@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
-import androidx.work.Data;
 import androidx.work.WorkInfo;
 
 import android.content.Context;
@@ -20,20 +19,17 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.postpc.Sheed.Connections.ConnectionsFragment;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
-import com.postpc.Sheed.yourMatches.YourMatchesFragment;
+import com.postpc.Sheed.Connections.YourMatches.YourMatchesFragment;
 
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
-import static com.postpc.Sheed.Utils.USER1_EMAIL;
 import static com.postpc.Sheed.Utils.WORKER_JOB_END_TIME;
-import static com.postpc.Sheed.Utils.WORKER_LAST_I;
-import static com.postpc.Sheed.Utils.WORKER_LAST_J;
 import static com.postpc.Sheed.Utils.WORK_MANAGER_TAG;
 
 public class MainActivity extends AppCompatActivity {
@@ -141,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     ProfileFragment profileFragment = ProfileFragment.newInstance();
-    YourMatchesFragment yourMatchesFragement = YourMatchesFragment.newInstance();
+    ConnectionsFragment connectionsFragment = ConnectionsFragment.newInstance();
     MakeMatchesFragment makeMatchesFragment = MakeMatchesFragment.newInstance();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
@@ -158,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                             return true;
 
                         case R.id.your_matches_navigate:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container, yourMatchesFragement).addToBackStack(String.valueOf(R.id.your_matches_navigate)).commit();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container, connectionsFragment).addToBackStack(String.valueOf(R.id.your_matches_navigate)).commit();
                             return true;
                     }
                     return false;

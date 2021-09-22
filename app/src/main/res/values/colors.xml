@@ -21,7 +21,8 @@
     <color name="green_like">#5ccc44</color>
     <color name="yellow_primary">#FFEB3B</color>
     <color name="orange_primary">#FFC107</color>
-    <color name="right_message">#785B04</color>
-    <color name="left_message">#FAE5A6</color>
+    <color name="orange_secondary">#CDBD8C</color>
+    <color name="chat_right_message_background">#D8A406</color>
+    <color name="chat_left_message_background">#FFFEFB</color>
 
 </resources>

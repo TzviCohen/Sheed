@@ -1,4 +1,4 @@
-package com.postpc.Sheed.yourMatches;
+package com.postpc.Sheed.Connections.YourMatches;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -14,14 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.postpc.Sheed.Query;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,8 +60,6 @@ public class YourMatchesFragment extends Fragment {
             }
             sheedUser = db.currentSheedUser;
         }
-
-        Log.i("User Name", sheedUser.firstName + " " + sheedUser.lastName);
     }
 
     @Override

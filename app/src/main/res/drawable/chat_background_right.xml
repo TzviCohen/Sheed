@@ -4,8 +4,8 @@
 
     <corners
         android:radius="10dp"
-        android:topLeftRadius="0dp"/>
+        android:topRightRadius="0dp"/>
 
-    <solid android:color="@color/left_message"/>
+    <solid android:color="@color/chat_right_message_background"/>
 
 </shape>

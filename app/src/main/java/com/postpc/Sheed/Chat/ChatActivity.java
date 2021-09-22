@@ -1,15 +1,13 @@
 package com.postpc.Sheed.Chat;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -31,84 +29,70 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * A simple {@link Fragment} subclass.
- * create an instance of this fragment.
- */
-public class ChatFragment extends Fragment {
+public class ChatActivity extends AppCompatActivity {
 
     SheedUser sheedUser;
-
     DatabaseReference reference;
 
-    CircleImageView profile_image;
+    CircleImageView profileImage;
     TextView username;
-
-    ImageButton btn_send;
-    EditText text_send;
+    ImageButton btnSend;
+    EditText textSend;
 
     MessageAdapter messageAdapter;
     RecyclerView recyclerView;
     List<Chat> chats;
 
+    Intent intent;
+
     SheedUsersDB db;
 
-    public ChatFragment() {
-        // Required empty public constructor
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chat);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        profileImage = findViewById(R.id.profileImage);
+        username = findViewById(R.id.username);
+        btnSend = findViewById(R.id.btnSend);
+        textSend = findViewById(R.id.textSend);
+
         if(sheedUser == null) {
             if (db == null) {
                 db = SheedApp.getDB();
             }
             sheedUser = db.currentSheedUser;
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_chat, container, false);
-
-        assert getArguments() != null;
-        String userId = getArguments().getString("userId");
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        profile_image = view.findViewById(R.id.profile_image);
-        username = view.findViewById(R.id.username);
-        btn_send = view.findViewById(R.id.btnSend);
-        text_send = view.findViewById(R.id.text_send);
+        intent = getIntent();
+        final String userId = intent.getStringExtra("userId");
 
         db.downloadUserAndDo(userId, sheedUser -> {
 //            profile_image.setImageResource(sheedUser.imageUrl);
             username.setText(sheedUser.firstName);
-            Picasso.with(getActivity()).load(sheedUser.imageUrl).into(profile_image);
+            Picasso.with(this).load(sheedUser.imageUrl).into(profileImage);
         });
 
-        btn_send.setOnClickListener(new View.OnClickListener() {
+        btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = text_send.getText().toString();
+                String msg = textSend.getText().toString();
                 if (!msg.equals("")) {
                     db.addChatMessage(sheedUser.email, userId, msg);
                 } else {
-                    Toast.makeText(getActivity(), "You cannot send an empty message", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChatActivity.this, "You cannot send an empty message", Toast.LENGTH_SHORT).show();
                 }
-                text_send.setText("");
+                textSend.setText("");
             }
         });
 
         readMessages(sheedUser.email, userId);
-
-        return view;
     }
 
     private void readMessages(String myId, String userId) {
@@ -122,11 +106,11 @@ public class ChatFragment extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Chat chat = snapshot.getValue(Chat.class);
                     if (chat.getReceiver().equals(myId) && chat.getSender().equals(userId) ||
-                                        chat.getReceiver().equals(userId) && chat.getSender().equals(myId)) {
+                            chat.getReceiver().equals(userId) && chat.getSender().equals(myId)) {
                         chats.add(chat);
                     }
 
-                    messageAdapter = new MessageAdapter(getActivity(), chats);
+                    messageAdapter = new MessageAdapter(ChatActivity.this, chats);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
