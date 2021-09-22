@@ -371,7 +371,11 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
 
             public void afterTextChanged(Editable s) {
                 passwordIn = password.getText().toString();
-                checkTurn();
+                if (!passwordIn.equals("")){
+                    checkTurn();
+                } else {
+                    sign.setEnabled(false);
+                }
             }
 
         });
@@ -385,7 +389,12 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
 
             public void afterTextChanged(Editable s) {
                 firstNameIn = firstName.getText().toString();
-                checkTurn();
+//                checkTurn();
+                if (!firstNameIn.equals("")){
+                    checkTurn();
+                } else {
+                    sign.setEnabled(false);
+                }
             }
 
         });
@@ -399,8 +408,14 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
 
             public void afterTextChanged(Editable s) {
                 lastNameIn = lastName.getText().toString();
-                checkTurn();
+//                checkTurn();
+                if (!lastNameIn.equals("")){
+                    checkTurn();
+                } else {
+                    sign.setEnabled(false);
+                }
             }
+
         });
 
         age.addTextChangedListener(new TextWatcher() {
@@ -414,7 +429,12 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
                     ageIn = 0;
                 }
 
-                checkTurn();
+//                checkTurn();
+                if (ageIn != 0){
+                    checkTurn();
+                } else {
+                    sign.setEnabled(false);
+                }
             }
         });
 
@@ -427,7 +447,12 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
 
             public void afterTextChanged(Editable s) {
                 emailIn = email.getText().toString();
-                checkTurn();
+//                checkTurn();
+                if (!emailIn.equals("")){
+                    checkTurn();
+                } else {
+                    sign.setEnabled(false);
+                }
             }
         });
 
@@ -486,6 +511,11 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
         System.out.println(id);
 
         if (parent.getId() == R.id.gender){
+            if (position == 0){
+                genderIn = null;
+            }
+
+
             if (position == 1){
                 genderIn = Gender.MAN;
             }
@@ -500,6 +530,10 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
         }
 
         if (parent.getId() == R.id.interestedIn){
+            if (position == 0){
+                interestedIn_In = null;
+            }
+
             if (position == 1){
                 interestedIn_In = Gender.MAN;
             }
@@ -512,8 +546,17 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
                 interestedIn_In = Gender.UNDEFINED;
             }
         }
+        if (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ){
+            checkTurn();
+        } else {
+            sign.setEnabled(false);
+        }
 
-        checkTurn();
+        if (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED ){
+            checkTurn();
+        } else {
+            sign.setEnabled(false);
+        }
     }
 
     @Override
