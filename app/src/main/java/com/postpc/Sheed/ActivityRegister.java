@@ -448,6 +448,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
                     db.addUser(sheedUser);
                     db.saveUserIdToSP(emailIn);
                     Intent profileActivityIntent = new Intent(context, MainActivity.class);
+                    profileActivityIntent.putExtra("password", passwordIn);
                     startActivity(profileActivityIntent);
 
                 }
