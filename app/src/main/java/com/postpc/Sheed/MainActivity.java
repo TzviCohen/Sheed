@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent mainActivity = new Intent(context, MainActivity.class);
                     startActivity(mainActivity);
                 }
-                if (!sheedUser.password.equals(password))
+                if (!sheedUser.password.equals(password) && password != null )
                 {
                     Toast.makeText(this, "incorrect password", Toast.LENGTH_LONG).show();
                     db.removeUserIdFromSP();
