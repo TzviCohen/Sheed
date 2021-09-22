@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/imgs"
-        android:text="We think they match is 97% !!"
+        android:text="@string/add_more_friends"
         android:layout_marginBottom="64dp"
         android:textAlignment="center"
         style="@style/sheedPrimaryText"
@@ -50,6 +50,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@mipmap/ic_launcher"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="2dp"
+                    android:padding="5dp"
                     />
 
                 <TextView
@@ -60,7 +63,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginVertical="16dp"
-                    android:text="Manu"
+                    android:text=""
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/almost_black"
@@ -91,6 +94,9 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@mipmap/ic_launcher"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+                    app:strokeColor="@color/black"
+                    app:strokeWidth="2dp"
+                    android:padding="5dp"
                     />
 
                 <TextView
@@ -101,7 +107,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginVertical="16dp"
-                    android:text="Nitsan"
+                    android:text=""
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/almost_black"
@@ -152,17 +158,6 @@
         android:id="@+id/swipe_detector"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <TextView
-        android:id="@+id/match_not_found_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="24sp"
-        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

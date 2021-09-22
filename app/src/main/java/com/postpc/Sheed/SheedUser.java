@@ -1,5 +1,7 @@
 package com.postpc.Sheed;
 
+import com.google.firebase.Timestamp;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +38,8 @@ public class SheedUser implements Serializable {
     public String id;
     public String email;
 
+    public Timestamp lastMatchingAlgoRun;
+
     SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String imageUrl, String email)
     {
         this.firstName = firstName;
@@ -62,8 +66,7 @@ public class SheedUser implements Serializable {
         matchesMadeMap = new HashMap<>();
         pairsToSuggestMap = new HashMap<>();
 
-
-
+        lastMatchingAlgoRun = Timestamp.now();
     }
 
     SheedUser()
@@ -88,6 +91,8 @@ public class SheedUser implements Serializable {
         matchesMap = new HashMap<>();
         matchesMadeMap = new HashMap<>();
         pairsToSuggestMap = new HashMap<>();
+
+        lastMatchingAlgoRun = Timestamp.now();
 
     }
 

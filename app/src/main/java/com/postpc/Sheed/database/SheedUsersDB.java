@@ -26,12 +26,17 @@ import com.postpc.Sheed.makeMatches.FindMatchWorker;
 import com.postpc.Sheed.makeMatches.MakeMatchesJob;
 import com.postpc.Sheed.makeMatches.MatchDescriptor;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.postpc.Sheed.Utils.ALGO_RUN_INTERVAL_MINS;
 import static com.postpc.Sheed.Utils.FS_USERS_COLLECTION;
 import static com.postpc.Sheed.Utils.SP_KEY_FOR_USER_ID;
 import static com.postpc.Sheed.Utils.USER_ID_KEY;
@@ -53,8 +58,8 @@ public class SheedUsersDB {
     public Map<String, SheedUser> userFriendsMap;
     public List<String> lastSnapshot;
 
-    private LiveData<HashMap<String, SheedUser>> communityLiveData;
-    private MutableLiveData<HashMap<String, SheedUser>> communityLiveDataMutable;
+    private LiveData<SheedUser> currentUserLiveData;
+    private MutableLiveData<SheedUser> currentUserLiveDataMutable;
 
     public SheedUsersDB(Context context) {
 
@@ -62,26 +67,16 @@ public class SheedUsersDB {
         this.fireStoreApp = FirebaseFirestore.getInstance();
         spForUserId = context.getSharedPreferences(SP_KEY_FOR_USER_ID, Context.MODE_PRIVATE);
         workManager = WorkManager.getInstance(context);
-        this.communityLiveDataMutable = new MutableLiveData<>();
-        this.communityLiveData = this.communityLiveDataMutable;
+
+        this.currentUserLiveDataMutable = new MutableLiveData<>();
+        this.currentUserLiveData = currentUserLiveDataMutable;
+
 
         lastSnapshot = null;
     }
 
-    public LiveData<HashMap<String, SheedUser>> getCommunityLiveData(){
-        return this.communityLiveData;
-    }
-
-    // TODO : tune this function with Yaheli
-    public boolean isUserExists(String userId){
-        fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                currentSheedUser = documentSnapshot.toObject(SheedUser.class);
-            }
-
-        });
-
-        return true;
+    public LiveData<SheedUser> getCurrentUserLiveData() {
+        return currentUserLiveData;
     }
 
     public void downloadUserAndDo(String userId , ProcessUserInFS processUserInFS ) {
@@ -164,6 +159,10 @@ public class SheedUsersDB {
     public void updateUser(SheedUser updatedUser){
 
         fireStoreApp.collection(FS_USERS_COLLECTION).document(updatedUser.email).set(updatedUser);
+        if (updatedUser.equals(currentSheedUser)){
+            currentSheedUser = updatedUser;
+            currentUserLiveDataMutable.setValue(currentSheedUser);
+        }
     }
 
     public void setFriends(SheedUser user1, SheedUser user2){
@@ -208,14 +207,6 @@ public class SheedUsersDB {
         updateUser(user2);
         updateUser(matcher);
 
-
-
-//
-//        user1.matches.add(descriptorAsStr);
-//        user2.matches.add(descriptorAsStr);
-//        matcher.matchesMade.add(descriptorAsStr);
-
-
     }
 
 
@@ -237,7 +228,6 @@ public class SheedUsersDB {
                     for (SheedUser friend : friendsObj){
                         userFriendsMap.put(friend.getEmail(), friend);
                     }
-                    communityLiveDataMutable.setValue((HashMap<String, SheedUser>) userFriendsMap);
                     userListProcessor.process(friendsObj);
                 });
 
@@ -257,10 +247,8 @@ public class SheedUsersDB {
 
         makeMatchesJob.setWorkerId(workRequest.getId());
 
-        // update SP and notify LiveData
-        workManager.enqueueUniqueWork(millis.toString(), ExistingWorkPolicy.KEEP, workRequest);
+        workManager.enqueueUniqueWork(millis.toString(), ExistingWorkPolicy.REPLACE, workRequest);
 
-        //Log.d("DB", "work " + number + " enqueued");
     }
 
     private void enqueueNewJob(List<String> oldCommunity, List<String> newCommunity){
@@ -280,6 +268,20 @@ public class SheedUsersDB {
         enqueueJob(new MakeMatchesJob(newCommunity.size()), diffArray);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private long getTimePassedFromLastAlgoRunMinutes(){
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime lastRun = millisToLocalDateTime(currentSheedUser.lastMatchingAlgoRun.toDate().getTime());
+        return lastRun.until(currentTime, ChronoUnit.MINUTES);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static LocalDateTime millisToLocalDateTime(Long millis) {
+        Instant instant = Instant.ofEpochMilli(millis);
+        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public ListenerRegistration listenToCommunityChanges(){
 
         if (currentSheedUser == null)
@@ -304,15 +306,23 @@ public class SheedUsersDB {
                 if (updatedUser == null) {
                     return;
                 }
-                else if (!updatedUser.community.equals(lastSnapshot)){
-                    currentSheedUser = updatedUser;
+
+                currentSheedUser = updatedUser;
+                if (!updatedUser.community.equals(lastSnapshot)){
+
+                    if (lastSnapshot == null){  // App launch - run matching algo only if it wasn't done lately
+                        if (getTimePassedFromLastAlgoRunMinutes() < ALGO_RUN_INTERVAL_MINS){
+                            return;
+                        }
+
+                    }
+
                     enqueueNewJob(lastSnapshot, updatedUser.community);
                     lastSnapshot = updatedUser.community;
                     Log.d("DB", "match worker job enqueued");
                     return;
                 }
 
-                currentSheedUser = updatedUser;
 
             }
         });

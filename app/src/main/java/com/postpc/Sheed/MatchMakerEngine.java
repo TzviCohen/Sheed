@@ -29,9 +29,9 @@ public class MatchMakerEngine {
 
     // This is a test make match
 
-    public static List<String> makeMatch()
+    public static Pair<String, String> makeMatch()
     {
-        return new ArrayList<>(Arrays.asList(USER1_EMAIL, USER2_EMAIL));
+        return new Pair<>(USER1_EMAIL, USER2_EMAIL);
     }
 
     public static Pair<SheedUser, SheedUser> getMatchFromWorker()

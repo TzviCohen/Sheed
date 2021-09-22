@@ -150,6 +150,13 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        db.getCurrentUserLiveData().observe(getViewLifecycleOwner(), sheedUser -> {
+            if (sheedUser != null){
+                fillRhsUser(sheedUser);
+            }
+        });
+
         ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -249,23 +256,7 @@ public class ProfileFragment extends Fragment {
         name.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(img);
 
-        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        img.setVisibility(View.VISIBLE);
-                    }
-                }).start();
-
-        img.animate().rotationBy(360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        img.setVisibility(View.VISIBLE);
-                    }
-                }).start();
-
-        matches.setText( sheedUser.matchesMade.size()  + " matches");
+        matches.setText( sheedUser.matchesMadeMap.size()  + " matches");
 
         friends.setText(sheedUser.community.size() + " friends");
     }

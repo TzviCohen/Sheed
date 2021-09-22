@@ -1,15 +1,12 @@
 package com.postpc.Sheed.makeMatches;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 
 import android.os.Handler;
 import android.util.Pair;
@@ -28,9 +25,8 @@ import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-
 import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.postpc.Sheed.Utils.SECOND;
 
@@ -42,8 +38,17 @@ import static com.postpc.Sheed.Utils.SECOND;
 public class MakeMatchesFragment extends Fragment {
 
     private final static String TAG = "Sheed MakeMatches Frag";
-    private final static int HEADER_APPROVAL_NUM = 4;
     private final static String PAGE_TITLE = "Sheed";
+
+
+    private final static float ALPHA_FADE_OUT = 0f;
+    private final static float ALPHA_FADE_IN = 1f;
+    private final static float GO_RIGHT = 360f;
+    private final static float GO_LEFT = -GO_RIGHT;
+
+    private final static int RHS = 0;
+    private final static int LHS = 1;
+
 
     private SheedUser sheedUser;
     SheedUsersDB db;
@@ -58,15 +63,16 @@ public class MakeMatchesFragment extends Fragment {
     TextView headerView;
     View swipeDetector;
     ImageButton backButton;
-    TextView matchesNotFoundView;
+    ConstraintLayout rhsBlock;
+    ConstraintLayout lhsBlock;
 
-    boolean isFirstIterRhs = true;
-    boolean isFirstIterLhs = true;
-    private int headerApprovalCount = 0;
+    //TextView matchesNotFoundView;
+
+    boolean noMatchesAreFound = true;
 
     Pair<SheedUser, SheedUser> suggestedMatch;
 
-
+    Pair<Float, Float> originalPosition;
 
     public MakeMatchesFragment() {
         // Required empty public constructor
@@ -88,26 +94,29 @@ public class MakeMatchesFragment extends Fragment {
         return fragment;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        isFirstIterRhs = true;
-        isFirstIterLhs = true;
-        headerApprovalCount = 0;
         final boolean[] waitingForFS = {true};
 
-        setUsersViewVisibility(GONE);
-        onMatchesNotFound();
-
-        final LiveData<HashMap<String, SheedUser>> communityLiveData = db.getCommunityLiveData();
-        communityLiveData.observe(getViewLifecycleOwner(), stringSheedUserHashMap -> {
-            if (waitingForFS[0]){
+        db.getCurrentUserLiveData().observe(getViewLifecycleOwner(), sheedUser -> {
+            if (noMatchesAreFound) {
                 matchLoopExecutorHelper();
-                waitingForFS[0] = false;
             }
-
         });
+
+        matchLoopExecutorHelper();
+
+//        final LiveData<HashMap<String, SheedUser>> communityLiveData = db.getCommunityLiveData();
+//        communityLiveData.observe(getViewLifecycleOwner(), stringSheedUserHashMap -> {
+//            if (waitingForFS[0]){
+//                matchLoopExecutorHelper();
+//                waitingForFS[0] = false;
+//            }
+//
+//        });
 
         acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
         declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
@@ -118,11 +127,18 @@ public class MakeMatchesFragment extends Fragment {
         swipeDetector.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
             @Override
             public void onSwipeRight() {
-                onAcceptMatchAction();
+                if (!noMatchesAreFound)
+                {
+                    onAcceptMatchAction();
+                }
             }
+
             @Override
             public void onSwipeLeft() {
-                onDeclineMatchAction();
+                if (!noMatchesAreFound)
+                {
+                    onDeclineMatchAction();
+                }
             }
         });
     }
@@ -131,7 +147,7 @@ public class MakeMatchesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(sheedUser == null) {
+        if (sheedUser == null) {
             if (db == null) {
                 db = SheedApp.getDB();
             }
@@ -150,11 +166,11 @@ public class MakeMatchesFragment extends Fragment {
         rhsNameView = view.findViewById(R.id.rhs_name);
         lhsNameView = view.findViewById(R.id.lhs_name);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             setPageTitle();
         }
         backButton = getActivity().findViewById(R.id.back_button);
-        backButton.setOnClickListener(v->{
+        backButton.setOnClickListener(v -> {
             getActivity().onBackPressed();
         });
 
@@ -166,8 +182,9 @@ public class MakeMatchesFragment extends Fragment {
 
         swipeDetector = view.findViewById(R.id.swipe_detector);
 
-        matchesNotFoundView = view.findViewById(R.id.match_not_found_view);
-
+        lhsBlock = view.findViewById(R.id.lhs_block);
+        rhsBlock = view.findViewById(R.id.rhs_block);
+        saveViewsOriginalPosition();
         return view;
     }
 
@@ -180,103 +197,49 @@ public class MakeMatchesFragment extends Fragment {
         page_title.setTextColor(Color.parseColor(Utils.PRIMARY_ORANGE));
     }
 
-    private void fillRhsUser(SheedUser sheedUser)
-    {
+    private void fillRhsUser(SheedUser sheedUser) {
+
+        setHeaderInMatch();
         rhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(rhsImage);
-        float translationValue = (isFirstIterRhs) ? 0f : 360f;
-
-        rhsImage.setVisibility(View.VISIBLE);
-        rhsImage.animate().translationXBy(-translationValue).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        showHeader();
-                    }
-                }).start();
-
-        rhsNameView.setVisibility(View.VISIBLE);
-        rhsNameView.animate().translationXBy(-translationValue).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        showHeader();
-                    }
-                }).start();
-
-        isFirstIterRhs = false;
-
-        rhsImage.setVisibility(View.VISIBLE);
-        rhsNameView.setVisibility(View.VISIBLE);
-        matchesNotFoundView.setVisibility(GONE);
+        fadeUsersIn(RHS);
     }
 
-    private void fillLhsUser(SheedUser sheedUser)
-    {
+    private void fillLhsUser(SheedUser sheedUser) {
+
+        setHeaderInMatch();
         lhsNameView.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(lhsImage);
-
-        float translationValue = (isFirstIterLhs) ? 0f : 360f;
-
-        lhsImage.setVisibility(View.VISIBLE);
-        lhsImage.animate().translationXBy(translationValue).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        showHeader();
-                    }
-                }).start();
-
-        lhsNameView.setVisibility(View.VISIBLE);
-        lhsNameView.animate().translationXBy(translationValue).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        showHeader();
-                    }
-                }).start();
-
-        isFirstIterLhs = false;
-
-        lhsImage.setVisibility(View.VISIBLE);
-        lhsNameView.setVisibility(View.VISIBLE);
-        matchesNotFoundView.setVisibility(GONE);
+        fadeUsersIn(LHS);
     }
 
-    private void matchLoopExecutorHelper(){
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void matchLoopExecutorHelper() {
 
-        // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
-//        List<String> matchFound = MatchMakerEngine.makeMatch();
-//        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
 
         suggestedMatch = MatchMakerEngine.getMatchFromWorker();
-        if (suggestedMatch == null)
-        {
-            onMatchesNotFound();
-        }
-        else
-        {
-            int delay = (isFirstIterLhs && isFirstIterRhs) ? 0 : 1;
-            Handler handler = new Handler();
-            handler.postDelayed(() -> {
-                fillLhsUser(suggestedMatch.first);
-                fillRhsUser(suggestedMatch.second);
-            }, delay * SECOND);
-        }
 
-        //db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
-        //db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
+//        final Pair<String, String> pair = MatchMakerEngine.makeMatch();
+//
+//        db.downloadUserAndDo(pair.first, this::fillLhsUser);
+//        db.downloadUserAndDo(pair.second, this::fillRhsUser);
+
+        noMatchesAreFound = suggestedMatch == null;
+
+        if (noMatchesAreFound) {
+            onMatchesNotFound();
+        } else {
+//            int delay = (isFirstIterLhs && isFirstIterRhs) ? 0 : 1;
+//            Handler handler = new Handler();
+//            handler.postDelayed(this::onMatchFound, delay * SECOND);
+            onMatchFound();
+        }
     }
 
-    private void showHeader(){
-        headerApprovalCount++;
-        if (headerApprovalCount == HEADER_APPROVAL_NUM)
-        {
-            headerView.setText("We think it's a great match !");
-            headerView.setVisibility(View.VISIBLE);
-            headerApprovalCount = 0;
-        }
-
+    private void onMatchFound(){
+        setButtonsVisibility(VISIBLE);
+        fillLhsUser(suggestedMatch.first);
+        fillRhsUser(suggestedMatch.second);
     }
 
     private void onAcceptMatchAction() {
@@ -284,7 +247,7 @@ public class MakeMatchesFragment extends Fragment {
         // Can add animations
 
         // Update DB to let users know they have been matched
-        if (suggestedMatch != null){
+        if (suggestedMatch != null) {
             db.setMatched(suggestedMatch.first, suggestedMatch.second, db.currentSheedUser);
         }
         headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
@@ -300,67 +263,94 @@ public class MakeMatchesFragment extends Fragment {
         roundEndRoutine();
     }
 
-    private void matchLoopExecutor(Integer delaySecs){
+    private void matchLoopExecutor(Integer delaySecs) {
 
         Handler handler = new Handler();
         handler.postDelayed(this::matchLoopExecutorHelper, delaySecs * SECOND);
     }
 
-    private void roundEndRoutine(){
+    private void roundEndRoutine() {
 
-        rhsNameView.animate().translationXBy(360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        rhsNameView.setVisibility(GONE);
-                    }
-                }).start();
-
-        rhsImage.animate().translationXBy(360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        rhsImage.setVisibility(GONE);
-                    }
-                }).start();
-
-        lhsNameView.animate().translationXBy(-360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        lhsNameView.setVisibility(GONE);
-                    }
-                }).start();
-
-
-        lhsImage.animate().translationXBy(-360f).alpha(1 / 0.3f).setDuration(500L).
-                setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        lhsImage.setVisibility(GONE);
-                    }
-                }).start();
-
+        fadeUsersOut(LHS);
+        fadeUsersOut(RHS);
         matchLoopExecutor(1);
-
     }
 
-    private void onMatchesNotFound(){
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void onMatchesNotFound() {
 
-        setUsersViewVisibility(GONE);
+        headerView.setText(R.string.add_more_friends);
+        setUsersViewVisibility(VISIBLE);
 
-        matchesNotFoundView.setVisibility(View.VISIBLE);
-        matchesNotFoundView.setText("No Matches are available, please add more friends");
+        lhsImage.setImageResource(R.mipmap.ic_launcher_foreground);
+        rhsImage.setImageResource(R.mipmap.ic_launcher_foreground);
+        lhsNameView.setText("");
+        rhsNameView.setText("");
+
+        fadeUsersIn(LHS);
+        fadeUsersIn(RHS);
+
+        setButtonsVisibility(INVISIBLE);
     }
 
-    private void setUsersViewVisibility(int status){
+    private void setUsersViewVisibility(int status) {
 
-        if (status == GONE || status == VISIBLE){
+        if (status == GONE || status == VISIBLE || status == INVISIBLE) {
             lhsImage.setVisibility(status);
             lhsNameView.setVisibility(status);
             rhsImage.setVisibility(status);
             rhsNameView.setVisibility(status);
         }
+    }
 
+    private void setButtonsVisibility(int status) {
+
+        if (status == GONE || status == VISIBLE || status == INVISIBLE) {
+
+            boolean enabled = status == VISIBLE;
+
+            acceptMatchFab.setVisibility(status);
+            declineMatchFab.setVisibility(status);
+
+            acceptMatchFab.setEnabled(enabled);
+            declineMatchFab.setEnabled(enabled);
+        }
+    }
+
+    private void setHeaderInMatch() {
+        headerView.setText("We think it's a great match !");
+    }
+
+    private void saveViewsOriginalPosition() {
+
+        originalPosition = new Pair<>(lhsBlock.getTranslationX(), rhsBlock.getTranslationX());
+    }
+
+    private void fadeUsersIn(int side) {
+
+        if (side == LHS) {
+            if (lhsBlock.getTranslationX() != originalPosition.first) {
+                animate(lhsBlock, GO_RIGHT, ALPHA_FADE_IN);
+            }
+        }
+        else {       // RHS
+            if (rhsBlock.getTranslationX() != originalPosition.second) {
+                    animate(rhsBlock, GO_LEFT, ALPHA_FADE_IN);
+            }
+        }
+
+    }
+
+    private void fadeUsersOut( int side){
+        if (side == LHS) {
+            animate(lhsBlock, GO_LEFT, ALPHA_FADE_OUT);
+        } else {       // RHS
+            animate(rhsBlock, GO_RIGHT, ALPHA_FADE_OUT);
+        }
+    }
+
+    private void animate(View view, float translationX, float alpha){
+        view.animate().translationXBy(translationX).alpha(alpha).setDuration(SECOND / 2).
+                start();
     }
 }

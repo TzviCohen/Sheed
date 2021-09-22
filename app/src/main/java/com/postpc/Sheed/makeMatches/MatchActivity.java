@@ -138,12 +138,12 @@ public class MatchActivity extends AppCompatActivity {
     void matchLoopExecutorHelper(){
 
         // List<String> matchFound = MatchMaker.makeMatch(currentUser.community);
-        List<String> matchFound = MatchMakerEngine.makeMatch();
-        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
-        db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
-        db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
-        headerView.setText("We think it's a great match !");
-        headerView.setVisibility(View.VISIBLE);
+        //List<String> matchFound = MatchMakerEngine.makeMatch();
+//        assert matchFound.size() == 2;  // Assert that two users retrieved from MatchMaker
+//        db.downloadUserAndDo(matchFound.get(0), this::fillLhsUser);
+//        db.downloadUserAndDo(matchFound.get(1), this::fillRhsUser);
+//        headerView.setText("We think it's a great match !");
+//        headerView.setVisibility(View.VISIBLE);
 
     }
 

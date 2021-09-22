@@ -1,10 +1,16 @@
 package com.postpc.Sheed;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LiveData;
+import androidx.work.Data;
+import androidx.work.WorkInfo;
+
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
@@ -19,10 +26,12 @@ import com.postpc.Sheed.profile.ProfileFragment;
 import com.postpc.Sheed.yourMatches.YourMatchesFragment;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static com.postpc.Sheed.Utils.USER1_EMAIL;
+import static com.postpc.Sheed.Utils.WORKER_JOB_END_TIME;
 import static com.postpc.Sheed.Utils.WORKER_LAST_I;
 import static com.postpc.Sheed.Utils.WORKER_LAST_J;
 import static com.postpc.Sheed.Utils.WORK_MANAGER_TAG;
@@ -37,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton backButton;
     ListenerRegistration currentUserCommunityListener;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try{
@@ -62,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
         //TODO: remove the following debugging line:
         //db.saveUserIdToSP("fake@mail");
 //        db.removeUserIdFromSP();
+        setJobsObserver();
         String userId = db.getIdFromSP();
         if (userId == null)
         {
@@ -163,4 +174,29 @@ public class MainActivity extends AppCompatActivity {
         Menu menu = bottomNavigationView.getMenu();
         menu.findItem(actionId).setChecked(true);
     }
+
+
+    public void setJobsObserver(){
+        LiveData<List<WorkInfo>> matchingAlgoRun = db.workManager.getWorkInfosByTagLiveData(WORK_MANAGER_TAG);
+        matchingAlgoRun.observe(this, workInfos -> {
+        if (db.currentSheedUser == null) {return;}
+            for (WorkInfo workInfo : workInfos)
+            {
+                if (workInfo.getState() == WorkInfo.State.SUCCEEDED){
+                    final long endTime = workInfo.getOutputData().getLong(WORKER_JOB_END_TIME, 0L);
+                    final long lastEndTime = db.currentSheedUser.lastMatchingAlgoRun.toDate().getTime();
+                    Timestamp endTimeStamp = new Timestamp(new Date(endTime));
+
+                    if (endTime > lastEndTime) {
+                        Log.d("WORKER_TIME", "last algo run was " + db.currentSheedUser.lastMatchingAlgoRun.toString() +". updated to " + endTimeStamp);
+                        db.currentSheedUser.lastMatchingAlgoRun = endTimeStamp;
+                        db.updateUser(db.currentSheedUser);
+
+                    }
+                }
+            }
+
+        });
+    }
 }
+

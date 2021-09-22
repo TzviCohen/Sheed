@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+
+import static com.postpc.Sheed.Utils.WORKER_JOB_END_TIME;
 import static com.postpc.Sheed.Utils.WORKER_DIFF_ARRAY;
 import static com.postpc.Sheed.Utils.WORKER_LAST_I;
 import static com.postpc.Sheed.Utils.WORKER_LAST_J;
@@ -53,7 +55,7 @@ public class FindMatchWorker extends Worker {
         diffArrayList = (diffArray == null) ? new ArrayList<>() : new ArrayList<>(Arrays.asList(diffArray));
 
         db.loadCurrentFriends(this::generateMatches);
-        return Result.success();
+        return Result.success(new Data.Builder().putLong(WORKER_JOB_END_TIME, System.currentTimeMillis()).build());
     }
 
     private void generateMatches(List<SheedUser> friends){
