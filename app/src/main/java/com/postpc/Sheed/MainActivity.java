@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     SheedUser sheedUser;
     ImageButton backButton;
     ListenerRegistration currentUserCommunityListener;
+    String password;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -58,6 +59,12 @@ public class MainActivity extends AppCompatActivity {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        Intent intentOpenedMe = getIntent();
+        password = intentOpenedMe.getStringExtra("password");
+
+
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(v->{
             onBackPressed();
@@ -94,6 +101,13 @@ public class MainActivity extends AppCompatActivity {
                 if (sheedUser == null)
                 {
                     Toast.makeText(this, "The user " + userId + " does not exists in App Data Base", Toast.LENGTH_LONG).show();
+                    db.removeUserIdFromSP();
+                    Intent mainActivity = new Intent(context, MainActivity.class);
+                    startActivity(mainActivity);
+                }
+                if (!sheedUser.password.equals(password))
+                {
+                    Toast.makeText(this, "incorrect password", Toast.LENGTH_LONG).show();
                     db.removeUserIdFromSP();
                     Intent mainActivity = new Intent(context, MainActivity.class);
                     startActivity(mainActivity);

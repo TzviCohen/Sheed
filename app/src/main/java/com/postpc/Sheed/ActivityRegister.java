@@ -274,6 +274,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
     SheedUsersDB db;
 
     String imageUrl;
+    public String passwordIn = "";
     public String firstNameIn = "";
     public String lastNameIn = "";
     public String emailIn = "";
@@ -285,6 +286,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
     ImageButton img;
     EditText firstName;
     EditText lastName;
+    EditText password;
     EditText age;
     EditText email;
     EditText gender;
@@ -333,6 +335,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
         sign.setEnabled(false);
         img = findViewById(R.id.image);
         email = findViewById(R.id.email);
+        password = findViewById(R.id.password);
 
         if (imageUrl == null){
             firstName.setVisibility(View.GONE);
@@ -341,6 +344,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
             email.setVisibility(View.GONE);
             spinner.setVisibility(View.GONE);
             spinner_interestedIn.setVisibility(View.GONE);
+            password.setVisibility(View.GONE);
 
         } else {
             img.setEnabled(false);
@@ -350,12 +354,27 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
             email.setVisibility(View.VISIBLE);
             spinner.setVisibility(View.VISIBLE);
             spinner_interestedIn.setVisibility(View.VISIBLE);
+            password.setVisibility(View.VISIBLE);
         }
 
         if (imageUrl != null){
             Picasso.with(this).load(imageUrl).centerCrop().fit().into(img);
         }
 
+
+        password.addTextChangedListener(new TextWatcher() {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            public void afterTextChanged(Editable s) {
+                passwordIn = password.getText().toString();
+                checkTurn();
+            }
+
+        });
 
         firstName.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -368,9 +387,6 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
                 firstNameIn = firstName.getText().toString();
                 checkTurn();
             }
-
-
-
 
         });
 
@@ -419,7 +435,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
 
         sign.setOnClickListener(v -> {
 
-            SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, imageUrl, emailIn);
+            SheedUser sheedUser = new SheedUser(firstNameIn, lastNameIn, ageIn, genderIn, interestedIn_In, imageUrl, emailIn, passwordIn);
             db.downloadUserAndDo(sheedUser.email, sheedUser1 -> {
 
                 boolean userAlreadyExists = sheedUser1 != null;
@@ -506,7 +522,7 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
     }
 
     public void checkTurn(){
-        if (!firstNameIn.equals("") & !lastNameIn.equals("") & !emailIn.equals("") & imageUrl != null & ageIn != 0 & (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ) & (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED )){
+        if (!passwordIn.equals("")  &!firstNameIn.equals("") & !lastNameIn.equals("") & !emailIn.equals("") & imageUrl != null & ageIn != 0 & (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ) & (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED )){
             sign.setEnabled(true);
         }
     }

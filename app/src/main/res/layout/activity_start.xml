@@ -97,22 +97,43 @@
         android:layout_weight="1"
         android:gravity="center">
 
+
         <EditText
             android:id="@+id/email"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginVertical="48dp"
+            android:background="@drawable/input_text_edit_text_shape"
             android:hint="Enter Your Email"
             android:inputType="textEmailAddress"
-            android:background="@drawable/input_text_edit_text_shape"
             android:padding="16dp"
-            android:layout_marginVertical="48dp"
-            android:layout_marginHorizontal="32dp"
+            android:textColor="@color/almost_black"
             android:textSize="18sp"
-            android:textColor="@color/almost_black" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.017" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:layout_marginVertical="48dp"
+            android:background="@drawable/input_text_edit_text_shape"
+            android:hint="Enter Your password"
+            android:inputType="numberPassword"
+            android:padding="16dp"
+            android:textColor="@color/almost_black"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

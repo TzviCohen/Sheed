@@ -37,10 +37,11 @@ public class SheedUser implements Serializable {
 
     public String id;
     public String email;
+    public String password;
 
     public Timestamp lastMatchingAlgoRun;
 
-    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String imageUrl, String email)
+    SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String imageUrl, String email, String password)
     {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,6 +49,7 @@ public class SheedUser implements Serializable {
         this.gender = gender;
         this.interestedIn = interestedIn;
         this.email = email;
+        this.password = password;
 
         this.imageUrl = imageUrl;
 
