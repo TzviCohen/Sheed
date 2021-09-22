@@ -12,21 +12,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Sheed">
-        <activity android:name=".Chat.ChatActivity"></activity>
+        <activity
+            android:name=".Chat.ChatActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- <activity android:name=".makeMatches.MatchActivity" /> -->
-        <activity android:name=".ActivityStart" />
-        <activity android:name=".ActivityRegister" />
-        <activity android:name=".ActivityAddPhoto" />
+        <activity
+            android:name=".ActivityStart"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityRegister"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityAddPhoto"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".AddFriendsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
     </application>
 

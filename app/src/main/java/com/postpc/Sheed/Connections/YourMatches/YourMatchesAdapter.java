@@ -20,6 +20,7 @@ import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MatchDescriptor;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,11 +51,16 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
-//        String userId = users.get(position);
-//        String matchMadeBy = matchMadeByArray.get(position);
         MatchDescriptor matchDescriptor = MatchDescriptor.fromString(matchesDescriptors.get(position));
         String userId = matchDescriptor.getMatchedWith(db.currentSheedUser.email);
         String matchMadeBy = matchDescriptor.getMatcherName();
+
+        HashMap<String, String> matchers = db.currentSheedUser.matchesMap;
+        String key1 = db.currentSheedUser.email + "#" + userId;
+        String key2 = userId + "#" + db.currentSheedUser.email;
+
+        String value1 = matchers.get(key1);
+////////////////////////////////
 
         db.downloadUserAndDo(userId, sheedUser -> {
             if(sheedUser.equals(null)){
@@ -62,7 +68,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             }
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString() + " years old");
-            holder.matchMadeBy.setText("Matched by\n" + matchMadeBy);
+            holder.matchMadeBy.setText("Matched by\n" + "NO ONE");
             Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
 
