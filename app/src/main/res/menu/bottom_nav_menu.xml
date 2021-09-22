@@ -10,7 +10,7 @@
         android:icon="@drawable/ic_baseline_magic_wand_24"/>
     <item
         android:id="@+id/your_matches_navigate"
-        android:title="Your Matches"
+        android:title="Connections"
         android:icon="@drawable/ic_baseline_whatshot_24"/>
 
 </menu>
