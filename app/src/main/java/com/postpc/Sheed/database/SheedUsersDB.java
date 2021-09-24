@@ -22,6 +22,7 @@ import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.ProcessUserList;
 import com.postpc.Sheed.Query;
 import com.postpc.Sheed.SheedUser;
+import com.postpc.Sheed.UserStatus;
 import com.postpc.Sheed.makeMatches.FindMatchWorker;
 import com.postpc.Sheed.makeMatches.MakeMatchesJob;
 import com.postpc.Sheed.makeMatches.MatchDescriptor;
@@ -264,30 +265,13 @@ public class SheedUsersDB {
             diffArray = new ArrayList<>(newCommunity);
             diffArray.removeAll(oldCommunity);
         }
-
         enqueueJob(new MakeMatchesJob(newCommunity.size()), diffArray);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private long getTimePassedFromLastAlgoRunMinutes(){
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime lastRun = millisToLocalDateTime(currentSheedUser.lastMatchingAlgoRun.toDate().getTime());
-        return lastRun.until(currentTime, ChronoUnit.MINUTES);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private static LocalDateTime millisToLocalDateTime(Long millis) {
-        Instant instant = Instant.ofEpochMilli(millis);
-        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public ListenerRegistration listenToCommunityChanges(){
 
-        if (currentSheedUser == null)
-        {
-            return null;
-        }
+        if (currentSheedUser == null) { return null; }
 
         String id = currentSheedUser.email;
         final DocumentReference document = fireStoreApp.collection(FS_USERS_COLLECTION).document(id);
@@ -311,10 +295,14 @@ public class SheedUsersDB {
                 if (!updatedUser.community.equals(lastSnapshot)){
 
                     if (lastSnapshot == null){  // App launch - run matching algo only if it wasn't done lately
-                        if (getTimePassedFromLastAlgoRunMinutes() < ALGO_RUN_INTERVAL_MINS){
-                            return;
-                        }
+                        UserStatus currentStatus = new UserStatus(currentSheedUser.community);
+                        if (currentStatus.isCommunityStatusEqual(currentSheedUser.getLastStatus())) // if user status wasn't changed from last algo run
+            {                                                                                       // then run the algorithm only if enough time passed
+                            if (currentSheedUser.getTimePassedFromLastAlgoRunMinutes() < ALGO_RUN_INTERVAL_MINS){
+                                return;
+                            }
 
+                        }
                     }
 
                     enqueueNewJob(lastSnapshot, updatedUser.community);

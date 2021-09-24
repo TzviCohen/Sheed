@@ -1,8 +1,19 @@
 package com.postpc.Sheed;
 
-import com.google.firebase.Timestamp;
+import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import com.google.firebase.Timestamp;
+import com.google.gson.GsonBuilder;
+import com.postpc.Sheed.makeMatches.MatchDescriptor;
+
+import com.postpc.Sheed.UserStatus;
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +50,8 @@ public class SheedUser implements Serializable {
     public String email;
     public String password;
 
-    public Timestamp lastMatchingAlgoRun;
+    public UserStatus lastStatus;
+    //public Timestamp lastMatchingAlgoRun;
 
     SheedUser(String firstName, String lastName, Integer age, Gender gender, Gender interestedIn, String imageUrl, String email, String password)
     {
@@ -68,7 +80,8 @@ public class SheedUser implements Serializable {
         matchesMadeMap = new HashMap<>();
         pairsToSuggestMap = new HashMap<>();
 
-        lastMatchingAlgoRun = Timestamp.now();
+        lastStatus = new UserStatus(community);
+        //lastMatchingAlgoRun = Timestamp.now();
     }
 
     SheedUser()
@@ -94,7 +107,9 @@ public class SheedUser implements Serializable {
         matchesMadeMap = new HashMap<>();
         pairsToSuggestMap = new HashMap<>();
 
-        lastMatchingAlgoRun = Timestamp.now();
+        lastStatus = new UserStatus(community);
+
+        //lastMatchingAlgoRun = Timestamp.now();
 
     }
 
@@ -123,4 +138,34 @@ public class SheedUser implements Serializable {
     public String getFullName() {
         return firstName + " " + lastName;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public long getTimePassedFromLastAlgoRunMinutes(){
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime lastRun = millisToLocalDateTime(getLastRun());
+        return lastRun.until(currentTime, ChronoUnit.MINUTES);
+    }
+
+    public long getLastRun(){
+        return getLastStatus().lastMatchingAlgoRun.toDate().getTime();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static LocalDateTime millisToLocalDateTime(Long millis) {
+        Instant instant = Instant.ofEpochMilli(millis);
+        return instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public UserStatus getLastStatus() {
+        return lastStatus;
+    }
+
+    public void saveStatus(Timestamp lastRun) {
+        this.lastStatus = new UserStatus(this.community, lastRun);
+    }
+
+    public void setLastStatus(UserStatus lastStatus) {
+        this.lastStatus = lastStatus;
+    }
+
 }

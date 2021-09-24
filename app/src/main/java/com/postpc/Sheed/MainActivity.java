@@ -23,7 +23,6 @@ import com.postpc.Sheed.Connections.ConnectionsFragment;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MakeMatchesFragment;
 import com.postpc.Sheed.profile.ProfileFragment;
-import com.postpc.Sheed.Connections.YourMatches.YourMatchesFragment;
 
 
 import java.util.Date;
@@ -194,12 +193,12 @@ public class MainActivity extends AppCompatActivity {
             {
                 if (workInfo.getState() == WorkInfo.State.SUCCEEDED){
                     final long endTime = workInfo.getOutputData().getLong(WORKER_JOB_END_TIME, 0L);
-                    final long lastEndTime = db.currentSheedUser.lastMatchingAlgoRun.toDate().getTime();
+                    final long lastEndTime = db.currentSheedUser.getLastRun();
                     Timestamp endTimeStamp = new Timestamp(new Date(endTime));
 
                     if (endTime > lastEndTime) {
-                        Log.d("WORKER_TIME", "last algo run was " + db.currentSheedUser.lastMatchingAlgoRun.toString() +". updated to " + endTimeStamp);
-                        db.currentSheedUser.lastMatchingAlgoRun = endTimeStamp;
+                        Log.d("WORKER_TIME", "last algo run was " + db.currentSheedUser.getLastStatus().toString() +". updated to " + endTimeStamp);
+                        db.currentSheedUser.saveStatus(endTimeStamp);
                         db.updateUser(db.currentSheedUser);
 
                     }
