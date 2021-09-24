@@ -21,6 +21,7 @@ public interface Utils {
     String WORKER_DIFF_ARRAY = "diff_array";
 
     String IMAGE_URL_INTENT = "img_url";
+    String SUGGESTED_MATCH = "suggested_match";
 
     int SECOND = 1000;
 
@@ -34,7 +35,7 @@ public interface Utils {
 
     String WORKER_JOB_END_TIME = "worker_end_time";
 
-    Long ALGO_RUN_INTERVAL_HOURS = 4L;
-    Long ALGO_RUN_INTERVAL_MINS = 0L; //ALGO_RUN_INTERVAL_HOURS * 60
+    Long ALGO_RUN_INTERVAL_HOURS = 2L;
+    Long ALGO_RUN_INTERVAL_MINS = ALGO_RUN_INTERVAL_HOURS * 60;
 
 }

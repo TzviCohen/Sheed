@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     SheedUser sheedUser;
     ImageButton backButton;
     ListenerRegistration currentUserCommunityListener;
-    String password;
+    String passwordInput;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -57,13 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         Intent intentOpenedMe = getIntent();
-        password = intentOpenedMe.getStringExtra("password");
+        passwordInput = intentOpenedMe.getStringExtra("password");
 
 
         backButton = findViewById(R.id.back_button);
-        backButton.setOnClickListener(v->{
-            onBackPressed();
-        });
+        backButton.setOnClickListener(v->{onBackPressed(); });
 
         context = this;
         if (db == null)
@@ -81,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "user id from sp is null");
             Intent launchActivity = new Intent(context, ActivityStart.class);
             startActivity(launchActivity);
-            return;
-
         }
         else
         {
@@ -96,27 +92,24 @@ public class MainActivity extends AppCompatActivity {
                 if (sheedUser == null)
                 {
                     Toast.makeText(this, "The user " + userId + " does not exists in App Data Base", Toast.LENGTH_LONG).show();
-                    db.removeUserIdFromSP();
-                    Intent mainActivity = new Intent(context, MainActivity.class);
-                    startActivity(mainActivity);
+                    db.logOut();
+                    //db.removeUserIdFromSP();
                 }
-                else if (!sheedUser.password.equals(password) && password != null )
+                else if (!sheedUser.password.equals(passwordInput) && passwordInput != null )
                 {
                     Toast.makeText(this, "incorrect password", Toast.LENGTH_LONG).show();
-                    db.removeUserIdFromSP();
-                    Intent mainActivity = new Intent(context, MainActivity.class);
-                    startActivity(mainActivity);
+                    db.logOut();
+                    //db.removeUserIdFromSP();
+                    //startActivity(new Intent(context, MainActivity.class));
                 }
                 else
                 {
-                    db.currentSheedUser = sheedUser;
+                    db.logIn(sheedUser);
+                    //db.currentSheedUser = sheedUser;
                     currentUserCommunityListener = db.listenToCommunityChanges();
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
-                        db.loadCurrentFriends(new ProcessUserList() {
-                            @Override
-                            public void process(List<SheedUser> sheedUsers) {
-                                // do noting - only make sure that list is up to date
-                            }
+                        db.loadCurrentFriends(sheedUsers -> {
+                            // do noting - only make sure that list is up to date
                         });
                     }
                     getSupportFragmentManager().beginTransaction().replace(R.id.container, makeMatchesFragment).commit();

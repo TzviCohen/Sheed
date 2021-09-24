@@ -72,14 +72,14 @@ public class ActivityStart extends AppCompatActivity {
         sign_in.setOnClickListener(v -> {
             db.saveUserIdToSP(emailIn);
 
-            Intent signActivityIntent = new Intent(context, MainActivity.class);
-            signActivityIntent.putExtra("password", passwordIn);
-            startActivity(signActivityIntent);
+            Intent mainActivityIntent = new Intent(context, MainActivity.class);
+            mainActivityIntent.putExtra("password", passwordIn);
+            startActivity(mainActivityIntent);
         });
 
         sign_up.setOnClickListener(v -> {
-            Intent signActivityIntent = new Intent(context, ActivityRegister.class);
-            startActivity(signActivityIntent);
+            Intent registerActivityIntent = new Intent(context, ActivityRegister.class);
+            startActivity(registerActivityIntent);
         });
 
 //        sign_up.setOnClickListener(v -> {

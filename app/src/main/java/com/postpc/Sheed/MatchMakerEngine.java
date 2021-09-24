@@ -34,8 +34,7 @@ public class MatchMakerEngine {
         return new Pair<>(USER1_EMAIL, USER2_EMAIL);
     }
 
-    public static Pair<SheedUser, SheedUser> getMatchFromWorker()
-    {
+    public static Pair<SheedUser, SheedUser> getMatchFromWorker() {
         Queue<String> formattedPairs = new LinkedList<>(db.currentSheedUser.pairsToSuggestMap.keySet());
         String keyMatch = formattedPairs.poll();
         if (keyMatch != null)
@@ -56,6 +55,32 @@ public class MatchMakerEngine {
                 Log.d("MatchEngine", "string2pair method failed");
             }
         }
+        return null;
+    }
+
+    public static String getRandomKeyMatch(){
+        List<String> formattedPairs = new ArrayList<>(db.currentSheedUser.pairsToSuggestMap.keySet());
+        if (formattedPairs.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            int idx = new Random().nextInt(formattedPairs.size());
+            return formattedPairs.get(idx);
+        }
+    }
+
+
+    public static Pair<SheedUser, SheedUser> getMatchFromKey(String key) {
+        Pair<String, String> pairStr = MatchDescriptor.keyToUsersIds(key);
+        if (pairStr != null && db.userFriendsMap != null)
+        {
+            SheedUser user1 = db.userFriendsMap.get(pairStr.first);
+            SheedUser user2 = db.userFriendsMap.get(pairStr.second);
+            return new Pair<>(user1, user2);
+        }
+
         return null;
     }
 }

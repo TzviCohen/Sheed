@@ -1,7 +1,5 @@
 package com.postpc.Sheed.profile;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,10 +10,8 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -28,7 +24,6 @@ import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.ActivityAddPhoto;
-import com.postpc.Sheed.ActivityStart;
 import com.postpc.Sheed.AddFriendsActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
@@ -36,9 +31,6 @@ import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
-
-import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
-import static com.postpc.Sheed.Utils.USER_INTENT_SERIALIZABLE_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,7 +47,7 @@ public class ProfileFragment extends Fragment {
     TextView name;
     TextView matches;
     TextView friends;
-    TextView log_out;
+    TextView logOutButton;
     TextView page_title;
     ImageButton edit_button;
     ShapeableImageView img;
@@ -129,7 +121,7 @@ public class ProfileFragment extends Fragment {
         name = view.findViewById(R.id.name);
         matches = view.findViewById(R.id.matches);
         friends = view.findViewById(R.id.friends);
-        log_out = view.findViewById(R.id.log_out);
+        logOutButton = view.findViewById(R.id.log_out);
         setPageTitle();
         edit_button = view.findViewById(R.id.edit_button);
         img = view.findViewById(R.id.img);
@@ -153,7 +145,7 @@ public class ProfileFragment extends Fragment {
 
         db.getCurrentUserLiveData().observe(getViewLifecycleOwner(), sheedUser -> {
             if (sheedUser != null){
-                fillRhsUser(sheedUser);
+                fillUserInfo(sheedUser);
             }
         });
 
@@ -167,23 +159,23 @@ public class ProfileFragment extends Fragment {
                             Log.d("here3", "here3");
                             // There are no request codes
                             Intent data = result.getData();
-                            fillRhsUser(db.currentSheedUser);
+                            fillUserInfo(db.currentSheedUser);
                             //sheedUser = db.currentSheedUser;
                         }
                     }
                 });
 
 
-        fillRhsUser(db.currentSheedUser);
+        fillUserInfo(db.currentSheedUser);
         addFriendsButton.setOnClickListener(v -> {
-            Intent addFriendsActivity = new Intent(getContext(), AddFriendsActivity.class);
-            startActivity(addFriendsActivity);
+            startActivity(new Intent(getContext(), AddFriendsActivity.class));
         });
 
-        log_out.setOnClickListener(v ->{
-            db.removeUserIdFromSP();
-            Intent launchActivity = new Intent(getContext(), ActivityStart.class);
-            startActivity(launchActivity);
+        logOutButton.setOnClickListener(v ->{
+            db.logOut();
+//            db.removeUserIdFromSP();
+//            Intent launchActivity = new Intent(getContext(), ActivityStart.class);
+//            startActivity(launchActivity);
         });
 
         edit_button.setOnClickListener(v ->{
@@ -249,7 +241,7 @@ public class ProfileFragment extends Fragment {
 //        someActivityResultLauncher.launch(intent);
 //    }
 
-    void fillRhsUser(SheedUser sheedUser)
+    void fillUserInfo(SheedUser sheedUser)
     {
         if (sheedUser == null) {return;}
 

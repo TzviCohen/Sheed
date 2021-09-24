@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,7 @@ import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static com.postpc.Sheed.Utils.SECOND;
+import static com.postpc.Sheed.Utils.SUGGESTED_MATCH;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,12 +52,11 @@ public class MakeMatchesFragment extends Fragment {
     private final static int LHS = 1;
 
 
-    private SheedUser sheedUser;
     SheedUsersDB db;
 
     TextView rhsNameView;
     TextView lhsNameView;
-    TextView page_title;
+    TextView pageTitle;
     ShapeableImageView rhsImage;
     ShapeableImageView lhsImage;
     ImageButton acceptMatchFab;
@@ -66,11 +67,10 @@ public class MakeMatchesFragment extends Fragment {
     ConstraintLayout rhsBlock;
     ConstraintLayout lhsBlock;
 
-    //TextView matchesNotFoundView;
-
-    boolean noMatchesAreFound = true;
+    //boolean noMatchesAreFound = true;
 
     Pair<SheedUser, SheedUser> suggestedMatch;
+    String suggestedMatchKey = null;
 
     Pair<Float, Float> originalPosition;
 
@@ -99,24 +99,18 @@ public class MakeMatchesFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final boolean[] waitingForFS = {true};
+        if (savedInstanceState != null)
+        {
+            suggestedMatchKey = savedInstanceState.getString(SUGGESTED_MATCH);
+        }
 
         db.getCurrentUserLiveData().observe(getViewLifecycleOwner(), sheedUser -> {
-            if (noMatchesAreFound) {
+            if (!isMatchFound()) {
                 matchLoopExecutorHelper();
             }
         });
 
         matchLoopExecutorHelper();
-
-//        final LiveData<HashMap<String, SheedUser>> communityLiveData = db.getCommunityLiveData();
-//        communityLiveData.observe(getViewLifecycleOwner(), stringSheedUserHashMap -> {
-//            if (waitingForFS[0]){
-//                matchLoopExecutorHelper();
-//                waitingForFS[0] = false;
-//            }
-//
-//        });
 
         acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
         declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
@@ -127,7 +121,7 @@ public class MakeMatchesFragment extends Fragment {
         swipeDetector.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
             @Override
             public void onSwipeRight() {
-                if (!noMatchesAreFound)
+                if (isMatchFound())
                 {
                     onAcceptMatchAction();
                 }
@@ -135,7 +129,7 @@ public class MakeMatchesFragment extends Fragment {
 
             @Override
             public void onSwipeLeft() {
-                if (!noMatchesAreFound)
+                if (isMatchFound())
                 {
                     onDeclineMatchAction();
                 }
@@ -147,11 +141,8 @@ public class MakeMatchesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (sheedUser == null) {
-            if (db == null) {
-                db = SheedApp.getDB();
-            }
-            sheedUser = db.currentSheedUser;
+        if (db == null) {
+            db = SheedApp.getDB();
         }
     }
 
@@ -161,7 +152,7 @@ public class MakeMatchesFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_make_matches, container, false);
         headerView = view.findViewById(R.id.header_title);
-        headerView.setText("user retrieved from database: " + sheedUser.firstName + " " + sheedUser.lastName);
+        //headerView.setText("user retrieved from database: " + sheedUser.firstName + " " + sheedUser.lastName);
 
         rhsNameView = view.findViewById(R.id.rhs_name);
         lhsNameView = view.findViewById(R.id.lhs_name);
@@ -190,11 +181,11 @@ public class MakeMatchesFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setPageTitle() {
-        page_title = getActivity().findViewById(R.id.page_title);
-        page_title.setTypeface(getResources().getFont(R.font.milla_cilla));
-        page_title.setText(PAGE_TITLE);
-        page_title.setTextSize(40);
-        page_title.setTextColor(Color.parseColor(Utils.PRIMARY_ORANGE));
+        pageTitle = getActivity().findViewById(R.id.page_title);
+        pageTitle.setTypeface(getResources().getFont(R.font.milla_cilla));
+        pageTitle.setText(PAGE_TITLE);
+        pageTitle.setTextSize(40);
+        pageTitle.setTextColor(Color.parseColor(Utils.PRIMARY_ORANGE));
     }
 
     private void fillRhsUser(SheedUser sheedUser) {
@@ -216,30 +207,30 @@ public class MakeMatchesFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void matchLoopExecutorHelper() {
 
+        //suggestedMatch = MatchMakerEngine.getMatchFromWorker();
 
-        suggestedMatch = MatchMakerEngine.getMatchFromWorker();
+        if (suggestedMatchKey == null)
+        {
+            suggestedMatchKey = MatchMakerEngine.getRandomKeyMatch();  // might return null of no friends to match
+        }
 
-//        final Pair<String, String> pair = MatchMakerEngine.makeMatch();
-//
-//        db.downloadUserAndDo(pair.first, this::fillLhsUser);
-//        db.downloadUserAndDo(pair.second, this::fillRhsUser);
-
-        noMatchesAreFound = suggestedMatch == null;
-
-        if (noMatchesAreFound) {
-            onMatchesNotFound();
-        } else {
-//            int delay = (isFirstIterLhs && isFirstIterRhs) ? 0 : 1;
-//            Handler handler = new Handler();
-//            handler.postDelayed(this::onMatchFound, delay * SECOND);
+        if (isMatchFound()) {
             onMatchFound();
+        } else {
+            onMatchesNotFound();
         }
     }
 
     private void onMatchFound(){
         setButtonsVisibility(VISIBLE);
-        fillLhsUser(suggestedMatch.first);
-        fillRhsUser(suggestedMatch.second);
+
+        suggestedMatch = MatchMakerEngine.getMatchFromKey(suggestedMatchKey);
+
+        if (suggestedMatch != null)
+        {
+            fillLhsUser(suggestedMatch.first);
+            fillRhsUser(suggestedMatch.second);
+        }
     }
 
     private void onAcceptMatchAction() {
@@ -273,6 +264,14 @@ public class MakeMatchesFragment extends Fragment {
 
         fadeUsersOut(LHS);
         fadeUsersOut(RHS);
+
+        db.currentSheedUser.pairsToSuggestMap.remove(suggestedMatchKey);
+        db.updateUser(db.currentSheedUser);
+
+        suggestedMatch = null;
+        suggestedMatchKey = null;
+
+
         matchLoopExecutor(1);
     }
 
@@ -352,5 +351,15 @@ public class MakeMatchesFragment extends Fragment {
     private void animate(View view, float translationX, float alpha){
         view.animate().translationXBy(translationX).alpha(alpha).setDuration(SECOND / 2).
                 start();
+    }
+
+    private boolean isMatchFound(){
+        return suggestedMatchKey != null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(SUGGESTED_MATCH, suggestedMatchKey);
     }
 }

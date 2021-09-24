@@ -65,7 +65,6 @@ public class AddFriendsActivity extends AppCompatActivity {
 
         // set click-listener to the button
         fabApprove.setOnClickListener(v -> {
-//            Intent intentToOpenService = new Intent(MainActivity.this, CalculateRootsService.class);
             String friendEmail = enterFriendEmailView.getText().toString();
             if (!isValidEmailAddress(friendEmail))
             {

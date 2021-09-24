@@ -1,5 +1,6 @@
 package com.postpc.Sheed.database;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
@@ -12,12 +13,14 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.gson.Gson;
+import com.postpc.Sheed.MainActivity;
 import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.ProcessUserList;
 import com.postpc.Sheed.Query;
@@ -133,17 +136,9 @@ public class SheedUsersDB {
     }
 
     public void addUser(SheedUser sheedUser) {
-//        String userId = UUID.randomUUID().toString();
         String userId = sheedUser.email;
-//        SheedUser sheedUser = new SheedUser(firstName, lastName, age, gender, interestedIn, imageUrl);
-        fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).set(sheedUser).addOnSuccessListener(documentSnapshot -> {
-
-//            SheedUser userObj = documentSnapshot.toObject(SheedUser.class);
-//
-//            // upon download success apply processFunc
-//            processUserInFS.process(userObj);
-        }).
-                addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
+        fireStoreApp.collection(FS_USERS_COLLECTION).document(userId).set(sheedUser)
+                    .addOnFailureListener(e -> Log.d("DB", "downloadAndDo failure" + e.getMessage()));
     }
 
     public void addChatMessage(String senderId, String receiverId, String message) {
@@ -164,6 +159,21 @@ public class SheedUsersDB {
             currentSheedUser = updatedUser;
             currentUserLiveDataMutable.setValue(currentSheedUser);
         }
+    }
+
+    public void logIn(SheedUser sheedUser){
+        saveUserIdToSP(sheedUser.email);
+        currentSheedUser = sheedUser;
+        currentUserLiveDataMutable.setValue(currentSheedUser);
+    }
+
+    public void logOut(){
+        removeUserIdFromSP();
+        currentSheedUser = null;
+
+        Intent mainActivityIntent = new Intent(context, MainActivity.class);
+        mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        fireStoreApp.getApp().getApplicationContext().startActivity(mainActivityIntent);
     }
 
     public void setFriends(SheedUser user1, SheedUser user2){
@@ -297,7 +307,7 @@ public class SheedUsersDB {
                     if (lastSnapshot == null){  // App launch - run matching algo only if it wasn't done lately
                         UserStatus currentStatus = new UserStatus(currentSheedUser.community);
                         if (currentStatus.isCommunityStatusEqual(currentSheedUser.getLastStatus())) // if user status wasn't changed from last algo run
-            {                                                                                       // then run the algorithm only if enough time passed
+                        {                                                                           // then run the algorithm only if enough time passed
                             if (currentSheedUser.getTimePassedFromLastAlgoRunMinutes() < ALGO_RUN_INTERVAL_MINS){
                                 return;
                             }
