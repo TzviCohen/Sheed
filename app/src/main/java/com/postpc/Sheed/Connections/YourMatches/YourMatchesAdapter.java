@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.imageview.ShapeableImageView;
 import com.postpc.Sheed.Chat.ChatActivity;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
@@ -20,6 +19,7 @@ import com.postpc.Sheed.database.SheedUsersDB;
 import com.postpc.Sheed.makeMatches.MatchDescriptor;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,14 +29,11 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
 
     Context context;
     SheedUsersDB db;
-//    List<String> users;
-//    List<String> matchMadeByArray;
     List<String> matchesDescriptors;
 
-    public YourMatchesAdapter(Context c, List<String> matchesDescriptors) {
+    public YourMatchesAdapter(Context c, HashMap<String, String> matchesDescriptors) {
         context = c;
-        this.matchesDescriptors = matchesDescriptors;
-//        matchMadeByArray = matchMadeBy;
+        this.matchesDescriptors = new ArrayList<>(matchesDescriptors.values());
         db = SheedApp.getDB();
     }
 
@@ -53,14 +50,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         MatchDescriptor matchDescriptor = MatchDescriptor.fromString(matchesDescriptors.get(position));
         String userId = matchDescriptor.getMatchedWith(db.currentSheedUser.email);
-        String matchMadeBy = matchDescriptor.getMatcherName();
-
-        HashMap<String, String> matchers = db.currentSheedUser.matchesMap;
-        String key1 = db.currentSheedUser.email + "#" + userId;
-        String key2 = userId + "#" + db.currentSheedUser.email;
-
-        String value1 = matchers.get(key1);
-////////////////////////////////
+        String matchers = matchDescriptor.getMatchersAsString();
 
         db.downloadUserAndDo(userId, sheedUser -> {
             if(sheedUser.equals(null)){
@@ -68,7 +58,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             }
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString() + " years old");
-            holder.matchMadeBy.setText("Matched by\n" + "NO ONE");
+            holder.matchers.setText(matchers);
             Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
 
@@ -91,15 +81,14 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
 
         TextView userName;
         TextView userAge;
-        TextView matchMadeBy;
+        TextView matchers;
         CircleImageView userImage;
-        Button chatButton;
 
         public viewHolder(@NonNull View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.userName);
             userAge = itemView.findViewById(R.id.userAge);
-            matchMadeBy = itemView.findViewById(R.id.matchMadeBy);
+            matchers = itemView.findViewById(R.id.matchers);
             userImage = itemView.findViewById(R.id.userImage);
         }
     }

@@ -103,6 +103,15 @@ public class MatchDescriptor {
         return names;
     }
 
+    public String getMatchersAsString() {
+        List<String> names = this.getMatcherNames();
+
+        if (names.size() == 1) {
+            return "Matched by " + names.get(0);
+        }
+
+        return "Matched by " + names.size() + " Friends";
+    }
 
     @Override
     public boolean equals(Object o) {

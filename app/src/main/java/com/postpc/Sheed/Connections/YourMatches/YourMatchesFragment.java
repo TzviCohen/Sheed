@@ -20,6 +20,7 @@ import com.postpc.Sheed.SheedUser;
 import com.postpc.Sheed.Utils;
 import com.postpc.Sheed.database.SheedUsersDB;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -68,8 +69,7 @@ public class YourMatchesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_your_matches, container, false);
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerYourMatchesList);
 
-        List<String> userIdMatches = sheedUser.matches;
-//        List<String> matchMadeBy = sheedUser.matchesMade;
+        HashMap<String, String> userIdMatches = sheedUser.matchesMap;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
             setPageTitle();
         }
