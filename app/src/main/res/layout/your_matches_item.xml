@@ -44,9 +44,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000000"
-            android:textSize="18sp"
-            android:paddingTop="3dp"
+            android:textSize="15sp"
+            android:paddingTop="2dp"
             tools:ignore="RtlSymmetry" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            style="?android:attr/ratingBarStyleSmall"
+            android:numStars="3"
+            android:stepSize="0.1"
+            android:isIndicator="true"/>
 
         <TextView
             android:id="@+id/matchers"

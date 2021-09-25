@@ -113,6 +113,10 @@ public class MatchDescriptor {
         return "Matched by " + names.size() + " Friends";
     }
 
+    public int getMatchersNumber() {
+        return this.getMatcherNames().size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,6 +52,8 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         MatchDescriptor matchDescriptor = MatchDescriptor.fromString(matchesDescriptors.get(position));
         String userId = matchDescriptor.getMatchedWith(db.currentSheedUser.email);
         String matchers = matchDescriptor.getMatchersAsString();
+        int matchersNum = matchDescriptor.getMatchersNumber();
+        int sheedUserFriendsNum = db.currentSheedUser.community.size();
 
         db.downloadUserAndDo(userId, sheedUser -> {
             if(sheedUser.equals(null)){
@@ -59,6 +62,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             holder.userName.setText(sheedUser.firstName);
             holder.userAge.setText(sheedUser.age.toString() + " years old");
             holder.matchers.setText(matchers);
+            holder.ratingBar.setRating((float) matchersNum / (float) sheedUserFriendsNum);
             Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
 
@@ -82,6 +86,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
         TextView userName;
         TextView userAge;
         TextView matchers;
+        RatingBar ratingBar;
         CircleImageView userImage;
 
         public viewHolder(@NonNull View itemView) {
@@ -89,6 +94,7 @@ public class YourMatchesAdapter extends RecyclerView.Adapter<YourMatchesAdapter.
             userName = itemView.findViewById(R.id.userName);
             userAge = itemView.findViewById(R.id.userAge);
             matchers = itemView.findViewById(R.id.matchers);
+            ratingBar = itemView.findViewById(R.id.ratingBar);
             userImage = itemView.findViewById(R.id.userImage);
         }
     }
