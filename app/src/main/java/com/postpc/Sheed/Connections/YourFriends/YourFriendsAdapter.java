@@ -1,5 +1,6 @@
 package com.postpc.Sheed.Connections.YourFriends;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -40,6 +41,7 @@ public class YourFriendsAdapter extends RecyclerView.Adapter<YourFriendsAdapter.
         return new com.postpc.Sheed.Connections.YourFriends.YourFriendsAdapter.viewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull com.postpc.Sheed.Connections.YourFriends.YourFriendsAdapter.viewHolder holder, int position) {
         String userId = friends.get(position);
@@ -48,7 +50,7 @@ public class YourFriendsAdapter extends RecyclerView.Adapter<YourFriendsAdapter.
             if(sheedUser.equals(null)){
                 return;
             }
-            holder.userName.setText(sheedUser.firstName);
+            holder.userName.setText(sheedUser.firstName + " " + sheedUser.lastName);
             Picasso.with(context).load(sheedUser.imageUrl).into(holder.userImage);
         });
 

@@ -65,7 +65,7 @@
             android:textColor="#2C2C2C"
             android:gravity="center"
             android:textSize="15sp"
-            android:paddingTop="5dp"
+            android:paddingTop="2dp"
             android:paddingBottom="5dp"
             tools:ignore="RtlSymmetry" />
 
