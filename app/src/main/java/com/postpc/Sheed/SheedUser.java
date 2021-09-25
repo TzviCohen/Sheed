@@ -161,7 +161,10 @@ public class SheedUser implements Serializable {
     }
 
     public void saveStatus(Timestamp lastRun) {
-        this.lastStatus = new UserStatus(this.community, lastRun);
+        if (!lastRun.equals(lastStatus.lastMatchingAlgoRun))
+        {
+            this.lastStatus = new UserStatus(this.community, lastRun);
+        }
     }
 
     public void setLastStatus(UserStatus lastStatus) {

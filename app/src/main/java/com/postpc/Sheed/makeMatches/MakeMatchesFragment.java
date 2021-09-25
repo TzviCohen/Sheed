@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.postpc.Sheed.ProcessUserInFS;
 import com.postpc.Sheed.R;
 import com.postpc.Sheed.SheedApp;
 import com.postpc.Sheed.SheedUser;
@@ -69,7 +70,9 @@ public class MakeMatchesFragment extends Fragment {
 
     //boolean noMatchesAreFound = true;
 
-    Pair<SheedUser, SheedUser> suggestedMatch;
+    //Pair<SheedUser, SheedUser> suggestedMatch;
+
+    Pair<String, String> matchIds;
     String suggestedMatchKey = null;
 
     Pair<Float, Float> originalPosition;
@@ -112,13 +115,20 @@ public class MakeMatchesFragment extends Fragment {
 
         matchLoopExecutorHelper();
 
-        acceptMatchFab.setOnClickListener(v -> onAcceptMatchAction());
+        acceptMatchFab.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View v) {
+                onAcceptMatchAction();
+            }
+        });
         declineMatchFab.setOnClickListener(v -> onDeclineMatchAction());
 
         acceptMatchFab.bringToFront();
         declineMatchFab.bringToFront();
 
         swipeDetector.setOnTouchListener(new OnSwipeTouchListener(getContext()) {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onSwipeRight() {
                 if (isMatchFound())
@@ -224,22 +234,25 @@ public class MakeMatchesFragment extends Fragment {
     private void onMatchFound(){
         setButtonsVisibility(VISIBLE);
 
-        suggestedMatch = MatchMakerEngine.getMatchFromKey(suggestedMatchKey);
+        //suggestedMatch = MatchMakerEngine.getMatchFromKey(suggestedMatchKey);
+        matchIds = MatchDescriptor.keyToUsersIds(suggestedMatchKey);
 
-        if (suggestedMatch != null)
+        if (matchIds != null)
         {
-            fillLhsUser(suggestedMatch.first);
-            fillRhsUser(suggestedMatch.second);
+            db.downloadUserAndDo(matchIds.first, this::fillLhsUser);
+            db.downloadUserAndDo(matchIds.second, this::fillRhsUser);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void onAcceptMatchAction() {
 
         // Can add animations
 
         // Update DB to let users know they have been matched
-        if (suggestedMatch != null) {
-            db.setMatched(suggestedMatch.first, suggestedMatch.second, db.currentSheedUser);
+        if (matchIds != null) {
+            db.setMatched(matchIds.first, matchIds.second);
+            //db.setMatched(suggestedMatch.first, suggestedMatch.second, db.currentSheedUser);
         }
         headerView.setText("Love is in the air !"); // I added this just to see that the listeners indeed work
         roundEndRoutine();
@@ -268,8 +281,9 @@ public class MakeMatchesFragment extends Fragment {
         db.currentSheedUser.pairsToSuggestMap.remove(suggestedMatchKey);
         db.updateUser(db.currentSheedUser);
 
-        suggestedMatch = null;
+        //suggestedMatch = null;
         suggestedMatchKey = null;
+        matchIds = null;
 
 
         matchLoopExecutor(1);

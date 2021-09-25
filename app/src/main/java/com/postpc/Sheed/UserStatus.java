@@ -8,7 +8,7 @@ import java.util.List;
 
 public class UserStatus {
 
-    int communitySize;
+    public Integer communitySize;
     public String lastCommunityMemberId;
     public Timestamp lastMatchingAlgoRun;
 

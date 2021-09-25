@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +171,7 @@ public class SheedUsersDB {
     public void logOut(){
         removeUserIdFromSP();
         currentSheedUser = null;
+        lastSnapshot = null;
 
         Intent mainActivityIntent = new Intent(context, MainActivity.class);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -191,7 +193,7 @@ public class SheedUsersDB {
 
         if (user1.matchesMap.containsKey(matchKey)) {
             MatchDescriptor existingMatchDescriptor = MatchDescriptor.fromString(user1.matchesMap.get(matchKey));
-            existingMatchDescriptor.addMatcher(matcher.id, matcher.getFullName());
+            existingMatchDescriptor.addMatcher(matcher.email, matcher.getFullName());
 
             user1.matchesMap.put(matchKey, existingMatchDescriptor.toString());
             user2.matchesMap.put(matchKey, existingMatchDescriptor.toString());
@@ -220,7 +222,43 @@ public class SheedUsersDB {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void setMatched(String user1Email, String user2Email){
 
+        downloadUsersAndDo(Arrays.asList(user1Email, user2Email), sheedUsers -> {
+
+            assert sheedUsers.size() == 2;
+
+            SheedUser user1 = null, user2 = null;
+            for (SheedUser sheedUser : sheedUsers)
+            {
+                if (sheedUser.email.equals(user1Email)) {
+                    user1 = sheedUser;
+                }
+                else if (sheedUser.email.equals(user2Email)){
+                    user2 = sheedUser;
+                }
+            }
+
+            assert user1 != null && user2 != null;
+            setMatched(user1, user2, currentSheedUser);
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void downloadUsersAndDo(List<String> usersIds, ProcessUserList userListProcessor){
+
+        if (usersIds.isEmpty())
+        {
+            return;
+        }
+        fireStoreApp.collection(FS_USERS_COLLECTION).whereIn("email", usersIds).
+                get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+            List<SheedUser> friendsObj = queryDocumentSnapshots.toObjects(SheedUser.class);
+            userListProcessor.process(friendsObj);
+        });
+    }
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -241,7 +279,6 @@ public class SheedUsersDB {
                     }
                     userListProcessor.process(friendsObj);
                 });
-
     }
 
     private void enqueueJob(MakeMatchesJob makeMatchesJob, List<String> diffArray){
