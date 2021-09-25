@@ -266,6 +266,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.postpc.Sheed.database.SheedUsersDB;
 import com.squareup.picasso.Picasso;
 
+import static com.postpc.Sheed.AddFriendsActivity.isValidEmailAddress;
 import static com.postpc.Sheed.Utils.IMAGE_URL_INTENT;
 
 public class ActivityRegister extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -566,11 +567,27 @@ public class ActivityRegister extends AppCompatActivity implements AdapterView.O
     }
 
     public void checkTurn(){
-        if (!passwordIn.equals("")  &!firstNameIn.equals("") & !lastNameIn.equals("") & !emailIn.equals("") & imageUrl != null & ageIn != 0 & (genderIn == Gender.MAN | genderIn == Gender.WOMAN| genderIn == Gender.UNDEFINED ) & (interestedIn_In == Gender.MAN | interestedIn_In == Gender.WOMAN| interestedIn_In == Gender.UNDEFINED )){
+        if (!passwordIn.isEmpty()               &&
+            !firstNameIn.isEmpty()              &&
+            !lastNameIn.isEmpty()               &&
+            !emailIn.isEmpty()                  &&
+            imageUrl != null                    &&
+            ageIn != 0                          &&
+            isValidGender(genderIn)             &&
+            isValidGender(interestedIn_In)
+
+        ){
             sign.setEnabled(true);
         }
     }
 
+
+    private static boolean isValidGender(Gender gender){
+        if (gender == null){
+            return false;
+        }
+        else return gender == Gender.MAN || gender == Gender.WOMAN || gender == Gender.UNDEFINED;
+    }
 
 //    @Override
 //    protected void onSaveInstanceState(@NonNull Bundle outState) {

@@ -44,10 +44,11 @@ public class UserStatus {
         if (o == null || getClass() != o.getClass()) return false;
         UserStatus userStatus = (UserStatus) o;
         boolean lastCommunityMemberEquals =
-                (lastCommunityMemberId == null && userStatus.lastCommunityMemberId == null) ||
+                (lastCommunityMemberId == null) ? userStatus.lastMatchingAlgoRun == null :
+
                 (lastCommunityMemberId.equals(userStatus.lastCommunityMemberId));
 
-        return communitySize == userStatus.communitySize &&
+        return communitySize.equals(userStatus.communitySize) &&
                 lastCommunityMemberEquals;
     }
 

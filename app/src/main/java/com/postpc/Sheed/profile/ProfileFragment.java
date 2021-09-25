@@ -2,6 +2,7 @@ package com.postpc.Sheed.profile;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -45,7 +46,8 @@ public class ProfileFragment extends Fragment {
     private final static String PAGE_TITLE = "Profile";
     SheedUsersDB db;
     TextView name;
-    TextView matches;
+    TextView matchesMadeView;
+    TextView matchesView;
     TextView friends;
     TextView logOutButton;
     TextView page_title;
@@ -119,7 +121,8 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         name = view.findViewById(R.id.name);
-        matches = view.findViewById(R.id.matches);
+        matchesMadeView = view.findViewById(R.id.matches_made_view);
+        matchesView = view.findViewById(R.id.matches_view);
         friends = view.findViewById(R.id.friends);
         logOutButton = view.findViewById(R.id.log_out);
         setPageTitle();
@@ -248,9 +251,51 @@ public class ProfileFragment extends Fragment {
         name.setText(sheedUser.firstName);
         Picasso.with(getContext()).load(sheedUser.imageUrl).centerCrop().fit().into(img);
 
-        matches.setText( sheedUser.matchesMadeMap.size()  + " matches");
+        matchesMadeView.setText(getMatchesMadeString(sheedUser));
+        matchesView.setText(getMatchesString(sheedUser));
+        friends.setText(getFriendsString(sheedUser));
+    }
 
-        friends.setText(sheedUser.community.size() + " friends");
+    private String getFriendsString(SheedUser sheedUser){
+        final Resources resources = getResources();
+        int communitySize = sheedUser.community.size();
+        if (communitySize == 0) {
+            return resources.getString(R.string.no_friends_str);
+        }
+        else if (communitySize == 1){
+            return resources.getString(R.string.one_friend_str);
+        }
+        else{
+            return resources.getString(R.string.friends_str, communitySize);
+        }
+    }
+
+    private String getMatchesMadeString(SheedUser sheedUser){
+        final Resources resources = getResources();
+        int matchesMadeNum = sheedUser.matchesMadeMap.size();
+        if (matchesMadeNum == 0) {
+            return resources.getString(R.string.no_matches_made_str);
+        }
+        else if (matchesMadeNum == 1){
+            return resources.getString(R.string.one_match_made_str);
+        }
+        else{
+            return resources.getString(R.string.matches_made_str, matchesMadeNum);
+        }
+    }
+
+    private String getMatchesString(SheedUser sheedUser){
+        final Resources resources = getResources();
+        int matchesNum = sheedUser.matchesMap.size();
+        if (matchesNum == 0) {
+            return resources.getString(R.string.no_matches_str);
+        }
+        else if (matchesNum == 1){
+            return resources.getString(R.string.one_match_str);
+        }
+        else{
+            return resources.getString(R.string.matches_str, matchesNum);
+        }
     }
 }
 

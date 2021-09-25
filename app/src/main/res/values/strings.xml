@@ -20,7 +20,19 @@
     <string name="chat">Chat</string>
 
     <string name="log_out"><u>Log Out</u> </string>
-    <string name="add_more_friends">Add more friends to let the match magic happen...</string>
+    <string name="add_more_friends">Add more friends to let the match magic happen…</string>
+
+    <string name="no_matches_made_str">You didn\'t match any couple yet</string>
+    <string name="one_match_made_str">You matched 1 couple</string>
+    <string name="matches_made_str">You matched %1$d couples</string>
+
+    <string name="no_matches_str">You haven\'t been matched yet</string>
+    <string name="one_match_str">You have been matched to 1 person</string>
+    <string name="matches_str">You have been matched to %1$d people</string>
+
+    <string name="no_friends_str">No friends yet</string>
+    <string name="one_friend_str">1 friends</string>
+    <string name="friends_str">%1$d friends</string>
 
 
 </resources>

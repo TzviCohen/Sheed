@@ -342,14 +342,14 @@ public class MakeMatchesFragment extends Fragment {
     private void fadeUsersIn(int side) {
 
         if (side == LHS) {
-            if (lhsBlock.getTranslationX() != originalPosition.first) {
+//            if (lhsBlock.getTranslationX() != originalPosition.first) {
                 animate(lhsBlock, GO_RIGHT, ALPHA_FADE_IN);
-            }
+//            }
         }
         else {       // RHS
-            if (rhsBlock.getTranslationX() != originalPosition.second) {
+//            if (rhsBlock.getTranslationX() != originalPosition.second) {
                     animate(rhsBlock, GO_LEFT, ALPHA_FADE_IN);
-            }
+//            }
         }
 
     }
@@ -363,7 +363,7 @@ public class MakeMatchesFragment extends Fragment {
     }
 
     private void animate(View view, float translationX, float alpha){
-        view.animate().translationXBy(translationX).alpha(alpha).setDuration(SECOND / 2).
+        view.animate().translationXBy(0).alpha(alpha).setDuration(SECOND / 2).
                 start();
     }
 

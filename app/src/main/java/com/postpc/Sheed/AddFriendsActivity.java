@@ -49,12 +49,15 @@ public class AddFriendsActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 // text did change
                 String newText = enterFriendEmailView.getText().toString();
-                boolean isValidInput = isValidEmailAddress(newText);
-                if (!isValidInput)
-                {
-                    enterFriendEmailView.setError("Please enter a valid email address");
-                }
-                fabApprove.setEnabled(isValidInput);
+
+                /* Email address will be checked on approve click */
+
+                //boolean isValidInput = isValidEmailAddress(newText);
+//                if (!isValidInput)
+//                {
+//                    enterFriendEmailView.setError("Please enter a valid email address");
+//                }
+                //fabApprove.setEnabled(isValidInput);
                 userInput = newText;
             }
         });
@@ -70,7 +73,7 @@ public class AddFriendsActivity extends AppCompatActivity {
             {
                 // Bad input - disable button and exit
                 enterFriendEmailView.setError("Please enter a valid email address");
-                fabApprove.setEnabled(false);
+                //fabApprove.setEnabled(false);
                 return;
             }
 
@@ -96,7 +99,7 @@ public class AddFriendsActivity extends AppCompatActivity {
                     db.setFriends(db.currentSheedUser, friendUser);
                     toastText = "You and " + friendUser.firstName + " are now friends on Sheed";
                 }
-                Toast.makeText(SheedApp.instance, toastText, Toast.LENGTH_LONG).show();
+                Toast.makeText(AddFriendsActivity.this, toastText, Toast.LENGTH_LONG).show();
             });
 
             finish();
