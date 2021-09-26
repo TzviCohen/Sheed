@@ -201,7 +201,6 @@ public class SheedUsersDB {
             if (!matcher.matchesMadeMap.containsKey(matchKey)) // don't add it twice
             {
                 matcher.matchesMadeMap.put(matchKey, existingMatchDescriptor.toString());
-                return;
             }
         }
         else{
