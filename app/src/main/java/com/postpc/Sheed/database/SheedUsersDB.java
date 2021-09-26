@@ -345,6 +345,7 @@ public class SheedUsersDB {
                         if (currentStatus.isCommunityStatusEqual(currentSheedUser.getLastStatus())) // if user status wasn't changed from last algo run
                         {                                                                           // then run the algorithm only if enough time passed
                             if (currentSheedUser.getTimePassedFromLastAlgoRunMinutes() < ALGO_RUN_INTERVAL_MINS){
+                                lastSnapshot = updatedUser.community;
                                 return;
                             }
 
