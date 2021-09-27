@@ -172,6 +172,7 @@ public class SheedUsersDB {
         removeUserIdFromSP();
         currentSheedUser = null;
         lastSnapshot = null;
+        userFriendsMap = null;
 
         Intent mainActivityIntent = new Intent(context, MainActivity.class);
         mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -333,7 +334,7 @@ public class SheedUsersDB {
                 return;
             } else {
                 SheedUser updatedUser = snapshot.toObject(SheedUser.class);
-                if (updatedUser == null) {
+                if (updatedUser == null || !updatedUser.email.equals(currentSheedUser.email)) {
                     return;
                 }
 

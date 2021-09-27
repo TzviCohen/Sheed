@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     db.logIn(sheedUser);
                     //db.currentSheedUser = sheedUser;
-                    currentUserCommunityListener = db.listenToCommunityChanges();
+                    handleListeners();
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
                         db.loadCurrentFriends(sheedUsers -> {
                             // do noting - only make sure that list is up to date
@@ -117,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
 
             });
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void handleListeners() {
+        if (currentUserCommunityListener != null) {
+            currentUserCommunityListener.remove();
+        }
+        currentUserCommunityListener = db.listenToCommunityChanges();
     }
 
     @Override

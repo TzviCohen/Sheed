@@ -66,9 +66,18 @@ public class FindMatchWorker extends Worker {
 
             for (int j = 0; j < diffArrayList.size(); j++)
             {
-//                Data data = new Data.Builder().putInt(WORKER_LAST_I, i).putInt(WORKER_LAST_J, j).build();
-//                setProgressAsync(data);
                 SheedUser user2 = db.userFriendsMap.get(diffArrayList.get(j));
+                if (user2 == null){
+                    Log.d("WORKER", "bad and not understable situation" +
+                             "Is " + diffArrayList.get(j) + " friend of " + db.currentSheedUser.email +
+                            ".\ndiffList is :\n" + diffArrayList );
+                }
+                if (user1 == null){
+                    Log.d("WORKER", "bad and not understable situation" +
+                            "user1 is null" );
+                }
+                assert user1 != null;
+                assert user2 != null;
                 String matchKey = MatchDescriptor.getKey(user1.email, user2.email);
 
 
